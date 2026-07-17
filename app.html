@@ -425,23 +425,21 @@
                 <h3><i class="fas fa-camera"></i> Fotos y Resumen de Problemas</h3>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Orden de Entrega</label>
+                        <label>Numero de Guia</label>
                         <div class="combo-wrap">
                             <div class="combo-row">
-                                <select id="fotoOrden"><option value="">Seleccionar...</option></select>
-                                <button class="combo-add" onclick="toggleNewInput('orden_foto')" title="Agregar nueva orden">+</button>
+                                <input type="text" id="fotoGuia" placeholder="Ej: 9147">
                             </div>
-                            <div class="combo-new" id="newOrden_fotoWrap"><input type="text" id="newOrden_fotoForm" placeholder="Ej: 02OC-01OE"><button class="btn-confirm" onclick="addComboOption('orden_foto')">OK</button><button class="btn-cancel" onclick="toggleNewInput('orden_foto')">X</button></div>
                         </div>
                     </div>
                     <div class="form-group"><label>Descripcion del Problema</label><textarea id="fotoDesc" placeholder="Describe el problema..."></textarea></div>
                 </div>
                 <div style="margin-top:12px">
-                    <div class="upload-area" onclick="document.getElementById('fileFoto').click()"><i class="fas fa-cloud-upload-alt"></i><p>Haz clic para subir foto(s)</p></div>
+                    <div class="upload-area" onclick="document.getElementById('fileFoto').click()"><i class="fas fa-cloud-upload-alt"></i><p>Haz clic para subir foto(s) - Se guardaran con la guia indicada</p></div>
                     <input type="file" id="fileFoto" accept="image/*" multiple style="display:none" onchange="handlePhotos(event)">
                 </div>
                 <div class="photo-grid" id="photoGrid"></div>
-                <div class="form-actions" style="margin-top:12px"><button class="btn btn-success" onclick="savePhotoEntry()"><i class="fas fa-save"></i> Guardar Entrada</button></div>
+                <div class="form-actions" style="margin-top:12px"><button class="btn btn-success" onclick="savePhotoEntry()"><i class="fas fa-save"></i> Guardar Fotos con Guia</button></div>
             </div>
             <div class="form-card">
                 <h3><i class="fas fa-table"></i> Registros de Recepcion</h3>
@@ -457,6 +455,7 @@
                 <div class="chart-card"><div class="chart-title"><i class="fas fa-industry"></i> Errores por Proveedor</div><div class="chart-subtitle" id="provSub">Problemas de recepcion</div><div class="chart-container" style="height:300px"><canvas id="chartProveedor"></canvas></div></div>
                 <div class="chart-card"><div class="chart-title"><i class="fas fa-file-invoice"></i> Errores por Orden</div><div class="chart-subtitle" id="ordRecepSub">Problemas por orden</div><div class="chart-container" style="height:300px"><canvas id="chartOrdenRecepcion"></canvas></div></div>
             </div>
+            <div id="fotosRecepcionContainer"></div>
         </div>
 
         <!-- LOTES -->
@@ -503,10 +502,8 @@
                             <div class="combo-new" id="newOrden_despWrap"><input type="text" id="newOrden_despForm" placeholder="Ej: 5OC1OE"><button class="btn-confirm" onclick="addComboOption('orden_desp')">OK</button><button class="btn-cancel" onclick="toggleNewInput('orden_desp')">X</button></div>
                         </div>
                     </div>
-                    <div class="form-group"><label>Carlos Santi</label><input type="number" id="despCarlos" min="0" placeholder="0"></div>
-                    <div class="form-group"><label>Jonatan Cisneros</label><input type="number" id="despJonatan" min="0" placeholder="0"></div>
-                    <div class="form-group"><label>Stalyn Sanchez</label><input type="number" id="despStalyn" min="0" placeholder="0"></div>
                 </div>
+                <div id="despCamposDinamicos" class="form-grid" style="margin-top:12px"></div>
                 <div class="form-actions">
                     <button class="btn btn-primary" onclick="addDespachador()"><i class="fas fa-plus"></i> Agregar</button>
                     <button class="btn btn-outline" onclick="clearFormDesp()"><i class="fas fa-eraser"></i> Limpiar</button>
@@ -519,7 +516,7 @@
                     <div class="filter-bar" style="margin:0"><span class="filter-label"><i class="fas fa-user"></i> Despachador:</span><select class="filter-select" id="filterPersonaDesp" onchange="renderDespachadorCharts()"><option value="todos">Todos</option></select></div>
                 </div>
                 <div style="max-height:300px;overflow-y:auto">
-                    <table class="data-table" id="tableDesp"><thead><tr><th>Orden</th><th>Carlos</th><th>Jonatan</th><th>Stalyn</th><th>Total</th><th></th></tr></thead><tbody></tbody></table>
+                    <table class="data-table" id="tableDesp"><thead id="tableDespHead"></thead><tbody></tbody></table>
                 </div>
             </div>
             <div class="chart-grid">
@@ -623,8 +620,9 @@ function populateAllCombos(){
     populateCombo('estPacking','producto_packing');
     populateCombo('repIndustria','industria');
     populateCombo('repOrden','orden');
-    populateCombo('fotoOrden','orden');
     populateCombo('despOrden','orden');
+    buildDespTableHead();
+    renderDespCamposDinamicos();
     populateDespFilter();
 }
 
@@ -651,6 +649,8 @@ function showSection(id,el){
     currentSectionIndex=sectionOrder.indexOf(id);
     updateNavButtons();
     if(id!=='config'&&session)renderSectionCharts(id);
+    if(id==='recepcion'){renderFotosEnRecepcion();renderRecepcionCharts()}
+    if(id==='despachadores'){buildDespTableHead();renderDespCamposDinamicos();populateDespFilter()}
 }
 function navSection(d){var n=currentSectionIndex+d;if(n<0||n>=sectionOrder.length)return;showSection(sectionOrder[n],document.querySelector('[data-section="'+sectionOrder[n]+'"]'))}
 function updateNavButtons(){document.getElementById('btnPrev').disabled=currentSectionIndex===0;document.getElementById('btnNext').disabled=currentSectionIndex===sectionOrder.length-1;document.getElementById('navLabel').textContent=(currentSectionIndex+1)+' / '+sectionOrder.length}
@@ -660,14 +660,18 @@ function closeModal(id){document.getElementById(id).classList.remove('show')}
 function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id]}}
 
 function getSessionKey(){return session?'krezco_'+session.mes+'_'+session.ano+'_'+session.oc+'_'+session.oe:''}
-function saveData(){if(!session)return;var d={estiba:getEstibaData(),recepcion:getRecepcionData(),lotes:getLotesData(),despachadores:getDespachadorData()};localStorage.setItem(getSessionKey(),JSON.stringify(d))}
+function getFotosKey(){return getSessionKey()+'_fotos'}
+function saveData(){
+    if(!session)return;
+    var d={estiba:getEstibaData(),recepcion:getRecepcionData(),lotes:getLotesData(),despachadores:getDespachadorData()};
+    localStorage.setItem(getSessionKey(),JSON.stringify(d));
+    saveAllFotos();
+}
 function loadData(){if(!session)return null;var raw=localStorage.getItem(getSessionKey());return raw?JSON.parse(raw):null}
 
 function getEstibaData(){var d=[];document.querySelectorAll('#tableEstiba tbody tr').forEach(function(r){var c=r.cells;d.push({dia:c[0].textContent,tipo:c[1].textContent,estiba:c[2].textContent,packing:c[3].textContent,cantidad:parseFloat(c[4].textContent)||0,diferencia:c[5].textContent,cambio:c[6].textContent})});return d}
 function getRecepcionData(){var d=[];document.querySelectorAll('#tableRecepcion tbody tr').forEach(function(r){var c=r.cells;d.push({industria:c[0].textContent,problema:c[1].textContent,orden:c[2].textContent,guia:c[3].textContent})});return d}
 function getLotesData(){var d=[];document.querySelectorAll('#tableLotes tbody tr').forEach(function(r){var c=r.cells;d.push({dia:c[0].textContent,estado:c[1].textContent,escuelas:parseFloat(c[2].textContent)||0})});return d}
-function getDespachadorData(){var d=[];document.querySelectorAll('#tableDesp tbody tr').forEach(function(r){var c=r.cells;d.push({orden:c[0].textContent,carlos:parseFloat(c[1].textContent)||0,jonatan:parseFloat(c[2].textContent)||0,stalyn:parseFloat(c[3].textContent)||0,total:parseFloat(c[4].textContent)||0})});return d}
-function getFotosData(){try{return JSON.parse(localStorage.getItem(getSessionKey()+'_fotos'))||[]}catch(e){return[]}}
 
 // ===== SESSION =====
 function saveSession(){
@@ -686,7 +690,14 @@ function loadSessionData(){
     fillTable('tableEstiba',data.estiba||[],function(e){var d=e.diferencia==='IGUAL'?'badge-green':'badge-red';var c=e.cambio==='CON CAMBIO'?'badge-orange':'badge-green';return '<td>'+e.dia+'</td><td>'+e.tipo+'</td><td>'+e.estiba+'</td><td>'+e.packing+'</td><td>'+e.cantidad+'</td><td><span class="badge '+d+'">'+e.diferencia+'</span></td><td><span class="badge '+c+'">'+e.cambio+'</span></td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>'});
     fillTable('tableRecepcion',data.recepcion||[],function(e){var p=e.problema==='SI'?'badge-red':'badge-green';return '<td>'+e.industria+'</td><td><span class="badge '+p+'">'+e.problema+'</span></td><td>'+e.orden+'</td><td>'+e.guia+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>'});
     fillTable('tableLotes',data.lotes||[],function(e){var s=e.estado==='COMPLETADO'?'badge-green':e.estado==='EN CURSO'?'badge-orange':'badge-blue';return '<td>'+e.dia+'</td><td><span class="badge '+s+'">'+e.estado+'</span></td><td>'+e.escuelas+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>'});
-    fillTable('tableDesp',data.despachadores||[],function(e){return '<td>'+e.orden+'</td><td>'+e.carlos+'</td><td>'+e.jonatan+'</td><td>'+e.stalyn+'</td><td>'+e.total+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>'});
+    var desps=getOptList('despachador');
+    fillTable('tableDesp',data.despachadores||[],function(e){
+        var tds='<td>'+e.orden+'</td>';
+        desps.forEach(function(d){tds+='<td>'+(e[d.replace(/ /g,'_')]||0)+'</td>'});
+        tds+='<td>'+(e.total||0)+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>';
+        return tds;
+    });
+    renderFotosEnRecepcion();
     renderAllCharts();
 }
 function fillTable(id,data,rowFn){var tbody=document.querySelector('#'+id+' tbody');tbody.innerHTML='';data.forEach(function(e){var tr=document.createElement('tr');tr.innerHTML=rowFn(e);tbody.appendChild(tr)})}
@@ -701,10 +712,13 @@ function updateSessionUI(){
 }
 function clearSession(){
     if(!confirm('Eliminar todos los datos de la sesion?'))return;
-    if(session){localStorage.removeItem(getSessionKey());localStorage.removeItem(getSessionKey()+'_fotos')}
+    if(session){localStorage.removeItem(getSessionKey());localStorage.removeItem(getFotosKey())}
     session=null;localStorage.removeItem('krezco_current_session');
     ['tableEstiba','tableRecepcion','tableLotes','tableDesp'].forEach(function(id){document.querySelector('#'+id+' tbody').innerHTML=''});
     Object.keys(chartInstances).forEach(function(k){destroyChart(k)});
+    pendingPhotos=[];
+    renderPhotoGrid();
+    var fc=document.getElementById('fotosRecepcionContainer');if(fc)fc.innerHTML='';
     updateSessionUI();showSection('config',document.querySelector('[data-section="config"]'));showToast('Sesion limpiada');
 }
 
@@ -743,21 +757,89 @@ function clearFormRecepcion(){document.getElementById('repIndustria').value='';d
 function handlePhotos(event){
     var files=event.target.files;
     for(var i=0;i<files.length;i++){
-        (function(f){var reader=new FileReader();reader.onload=function(e){pendingPhotos.push({data:e.target.result,name:f.name,ts:Date.now()});renderPhotoGrid()};reader.readAsDataURL(f)})(files[i]);
+        (function(f){
+            var reader=new FileReader();
+            reader.onload=function(e){
+                pendingPhotos.push({data:e.target.result,name:f.name,ts:Date.now()});
+                renderPhotoGrid();
+            };
+            reader.readAsDataURL(f);
+        })(files[i]);
     }
     event.target.value='';
 }
-function renderPhotoGrid(){var grid=document.getElementById('photoGrid');grid.innerHTML='';pendingPhotos.forEach(function(p,i){var card=document.createElement('div');card.className='photo-card';card.innerHTML='<img src="'+p.data+'" alt="'+p.name+'"><div class="photo-info"><span class="photo-delete" onclick="deletePhoto('+i+')"><i class="fas fa-trash"></i></span><strong>'+p.name+'</strong></div>';grid.appendChild(card)})}
-function deletePhoto(i){pendingPhotos.splice(i,1);renderPhotoGrid();saveFotos()}
-function savePhotoEntry(){
-    var orden=document.getElementById('fotoOrden').value;
-    var desc=document.getElementById('fotoDesc').value.trim();
-    if(pendingPhotos.length===0){showToast('Sube al menos una foto');return}
-    pendingPhotos.forEach(function(p){p.orden=orden;p.desc=desc});
-    saveFotos();document.getElementById('fotoOrden').value='';document.getElementById('fotoDesc').value='';pendingPhotos=[];
-    renderPhotoGrid();showToast('Entrada guardada');
+function renderPhotoGrid(){
+    var grid=document.getElementById('photoGrid');
+    grid.innerHTML='';
+    if(pendingPhotos.length===0){
+        grid.innerHTML='<div style="text-align:center;color:var(--txt2);font-size:12px;padding:10px">No hay fotos pendientes. Sube fotos y luego guarda la entrada.</div>';
+        return;
+    }
+    pendingPhotos.forEach(function(p,i){
+        var card=document.createElement('div');card.className='photo-card';
+        card.innerHTML='<img src="'+p.data+'" alt="'+p.name+'"><div class="photo-info"><span class="photo-delete" onclick="deletePhoto('+i+')"><i class="fas fa-trash"></i></span><strong>'+p.name+'</strong></div>';
+        grid.appendChild(card);
+    });
 }
-function saveFotos(){if(session)localStorage.setItem(getSessionKey()+'_fotos',JSON.stringify(pendingPhotos))}
+function deletePhoto(i){pendingPhotos.splice(i,1);renderPhotoGrid()}
+function savePhotoEntry(){
+    var guia=document.getElementById('fotoGuia').value.trim();
+    var desc=document.getElementById('fotoDesc').value.trim();
+    if(!guia){showToast('Ingresa el numero de guia');return}
+    if(pendingPhotos.length===0){showToast('Sube al menos una foto');return}
+    var allFotos=getAllFotos();
+    pendingPhotos.forEach(function(p){
+        allFotos.push({data:p.data,name:p.name,guia:guia,desc:desc,ts:p.ts||Date.now()});
+    });
+    saveAllFotos(allFotos);
+    pendingPhotos=[];
+    renderPhotoGrid();
+    document.getElementById('fotoGuia').value='';
+    document.getElementById('fotoDesc').value='';
+    renderFotosEnRecepcion();
+    showToast('Fotos guardadas para guia: '+guia);
+}
+function getAllFotos(){
+    if(!session)return[];
+    try{return JSON.parse(localStorage.getItem(getFotosKey()))||[]}catch(e){return[]}
+}
+function saveAllFotos(fotos){
+    if(!session)return;
+    if(!fotos)fotos=getAllFotos();
+    localStorage.setItem(getFotosKey(),JSON.stringify(fotos));
+}
+function deleteFotoGuia(index){
+    var allFotos=getAllFotos();
+    allFotos.splice(index,1);
+    saveAllFotos(allFotos);
+    renderFotosEnRecepcion();
+    showToast('Foto eliminada');
+}
+function renderFotosEnRecepcion(){
+    var container=document.getElementById('fotosRecepcionContainer');
+    if(!container)return;
+    var allFotos=getAllFotos();
+    if(allFotos.length===0){
+        container.innerHTML='<div style="text-align:center;color:var(--txt2);font-size:12px;padding:20px"><i class="fas fa-camera" style="font-size:24px;color:var(--border);display:block;margin-bottom:8px"></i>No hay fotos registradas</div>';
+        return;
+    }
+    var html='<div class="section-label" style="margin-top:16px"><i class="fas fa-camera"></i> Fotos por Guia</div>';
+    var porGuia={};
+    allFotos.forEach(function(f,i){
+        if(!porGuia[f.guia])porGuia[f.guia]={desc:f.desc,fotos:[]};
+        porGuia[f.guia].fotos.push({data:f.data,name:f.name,index:i});
+    });
+    Object.keys(porGuia).sort().forEach(function(guia){
+        html+='<div style="margin-bottom:16px">';
+        html+='<div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:8px"><i class="fas fa-truck" style="color:var(--blue)"></i> Guia: '+guia+(porGuia[guia].desc?' - '+porGuia[guia].desc:'')+'</div>';
+        html+='<div class="photo-grid">';
+        porGuia[guia].fotos.forEach(function(f){
+            html+='<div class="photo-card"><img src="'+f.data+'" alt="'+f.name+'"><div class="photo-info"><span class="photo-delete" onclick="deleteFotoGuia('+f.index+')"><i class="fas fa-trash"></i></span><strong>'+f.name+'</strong></div></div>';
+        });
+        html+='</div></div>';
+    });
+    container.innerHTML=html;
+}
 
 // ===== LOTES =====
 function addLote(){
@@ -773,26 +855,63 @@ function addLote(){
 }
 function clearFormLote(){document.getElementById('lotDia').value='';document.getElementById('lotEscuelas').value=''}
 
-// ===== DESPACHADORES =====
+// ===== DESPACHADORES DINAMICOS =====
+function renderDespCamposDinamicos(){
+    var container=document.getElementById('despCamposDinamicos');
+    var desps=getOptList('despachador');
+    var html='';
+    desps.forEach(function(d){
+        html+='<div class="form-group"><label>'+d+'</label><input type="number" id="desp_'+d.replace(/ /g,'_')+'" min="0" placeholder="0"></div>';
+    });
+    container.innerHTML=html;
+}
 function addDespachador(){
     var ord=document.getElementById('despOrden').value;
-    var c=parseFloat(document.getElementById('despCarlos').value)||0;
-    var j=parseFloat(document.getElementById('despJonatan').value)||0;
-    var s=parseFloat(document.getElementById('despStalyn').value)||0;
     if(!ord){showToast('Ingresa la orden');return}
+    var desps=getOptList('despachador');
     var tr=document.createElement('tr');
-    tr.innerHTML='<td>'+ord+'</td><td>'+c+'</td><td>'+j+'</td><td>'+s+'</td><td>'+(c+j+s)+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>';
+    var total=0;
+    var tds='<td>'+ord+'</td>';
+    desps.forEach(function(d){
+        var val=parseFloat(document.getElementById('desp_'+d.replace(/ /g,'_')).value)||0;
+        total+=val;
+        tds+='<td>'+val+'</td>';
+    });
+    tds+='<td>'+total+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-times"></i></button></td>';
+    tr.innerHTML=tds;
     document.querySelector('#tableDesp tbody').appendChild(tr);
     clearFormDesp();saveData();renderDespachadorCharts();showToast('Despachador agregado');
 }
-function clearFormDesp(){document.getElementById('despOrden').value='';['despCarlos','despJonatan','despStalyn'].forEach(function(id){document.getElementById(id).value=''})}
-
-// ===== FILTERS =====
+function clearFormDesp(){
+    document.getElementById('despOrden').value='';
+    getOptList('despachador').forEach(function(d){var el=document.getElementById('desp_'+d.replace(/ /g,'_'));if(el)el.value=''});
+}
+function buildDespTableHead(){
+    var thead=document.getElementById('tableDespHead');
+    var desps=getOptList('despachador');
+    var html='<tr><th>Orden</th>';
+    desps.forEach(function(d){html+='<th>'+d+'</th>'});
+    html+='<th>Total</th><th></th></tr>';
+    thead.innerHTML=html;
+}
 function populateDespFilter(){
     var sel=document.getElementById('filterPersonaDesp');var cv=sel.value;
     sel.innerHTML='<option value="todos">Todos</option>';
-    getOptList('despachador').forEach(function(d){var o=document.createElement('option');o.value=d.toLowerCase().replace(/ /g,'_');o.textContent=d;sel.appendChild(o)});
+    getOptList('despachador').forEach(function(d){var o=document.createElement('option');o.value=d.replace(/ /g,'_');o.textContent=d;sel.appendChild(o)});
     sel.value=cv;
+}
+function getDespachadorData(){
+    var desps=getOptList('despachador');
+    var d=[];
+    document.querySelectorAll('#tableDesp tbody tr').forEach(function(r){
+        var c=r.cells;
+        var obj={orden:c[0].textContent};
+        var totalIdx=1+desps.length;
+        desps.forEach(function(dp,i){obj[dp.replace(/ /g,'_')]=parseFloat(c[1+i].textContent)||0});
+        obj.total=parseFloat(c[totalIdx].textContent)||0;
+        d.push(obj);
+    });
+    return d;
 }
 
 // ===== CHARTS =====
@@ -844,23 +963,32 @@ function renderLotesCharts(){
     destroyChart('chartEscuelas');chartInstances['chartEscuelas']=new Chart(document.getElementById('chartEscuelas'),{type:'bar',data:{labels:dias.map(function(d){return 'Dia '+d}),datasets:[{label:'Escuelas',data:esc,backgroundColor:'#0891b2',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:10,weight:'600'}},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tooltipStyle,datalabels:dlLarge}}});
 }
 function renderDespachadorCharts(){
-    var data=[];document.querySelectorAll('#tableDesp tbody tr').forEach(function(r){var c=r.cells;data.push({orden:c[0].textContent,carlos:parseFloat(c[1].textContent)||0,jonatan:parseFloat(c[2].textContent)||0,stalyn:parseFloat(c[3].textContent)||0,total:parseFloat(c[4].textContent)||0})});
+    var desps=getOptList('despachador');
+    var colors=['#2563eb','#ea580c','#16a34a','#dc2626','#7c3aed','#0891b2','#ec4899','#f59e0b'];
+    var data=[];
+    document.querySelectorAll('#tableDesp tbody tr').forEach(function(r){
+        var c=r.cells;var obj={orden:c[0].textContent};
+        desps.forEach(function(d,i){obj[d.replace(/ /g,'_')]=parseFloat(c[1+i].textContent)||0});
+        obj.total=parseFloat(c[1+desps.length].textContent)||0;
+        data.push(obj);
+    });
     var ordenes=[];data.forEach(function(d){if(d.orden&&ordenes.indexOf(d.orden)===-1)ordenes.push(d.orden)});
     var so=document.getElementById('filterOrdenDesp');var cvo=so.value;so.innerHTML='<option value="todas">Todas</option>';ordenes.sort().forEach(function(o){var op=document.createElement('option');op.value=o;op.textContent=o;so.appendChild(op)});so.value=cvo;
     var fo=document.getElementById('filterOrdenDesp').value;var fp=document.getElementById('filterPersonaDesp').value;
     var desp=data.filter(function(d){return d.orden});if(fo!=='todas')desp=desp.filter(function(d){return d.orden===fo});
     var ds=[];
-    if(fp==='todos'||fp==='carlos_santi')ds.push({label:'Carlos Santi',data:desp.map(function(d){return d.carlos}),backgroundColor:'#2563eb',borderRadius:4});
-    if(fp==='todos'||fp==='jonatan_cisneros')ds.push({label:'Jonatan Cisneros',data:desp.map(function(d){return d.jonatan}),backgroundColor:'#ea580c',borderRadius:4});
-    if(fp==='todos'||fp==='stalyn_sanchez')ds.push({label:'Stalyn Sanchez',data:desp.map(function(d){return d.stalyn}),backgroundColor:'#16a34a',borderRadius:4});
+    desps.forEach(function(d,i){
+        var key=d.replace(/ /g,'_');
+        if(fp==='todos'||fp===key)ds.push({label:d,data:desp.map(function(dd){return dd[key]||0}),backgroundColor:colors[i%colors.length],borderRadius:4});
+    });
     var sub='';if(fo==='todas'&&fp==='todos')sub='Todas las ordenes y despachadores';else if(fo!=='todas'&&fp==='todos')sub='Orden: '+fo;else sub=fo+' - '+fp;
     document.getElementById('despSub').textContent=sub;
     destroyChart('chartDespachador');chartInstances['chartDespachador']=new Chart(document.getElementById('chartDespachador'),{type:'bar',data:{labels:desp.map(function(d){return d.orden}),datasets:ds},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:9,weight:'600'},maxRotation:65},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:16}},tooltip:tooltipStyle,datalabels:dlLarge}}});
-    var tc=desp.reduce(function(s,d){return s+d.carlos},0);var tj=desp.reduce(function(s,d){return s+d.jonatan},0);var ts2=desp.reduce(function(s,d){return s+d.stalyn},0);
     var pl=[],pd=[],pc=[];
-    if(fp==='todos'||fp==='carlos_santi'){pl.push('Carlos Santi');pd.push(tc);pc.push('#2563eb')}
-    if(fp==='todos'||fp==='jonatan_cisneros'){pl.push('Jonatan Cisneros');pd.push(tj);pc.push('#ea580c')}
-    if(fp==='todos'||fp==='stalyn_sanchez'){pl.push('Stalyn Sanchez');pd.push(ts2);pc.push('#16a34a')}
+    desps.forEach(function(d,i){
+        var key=d.replace(/ /g,'_');
+        if(fp==='todos'||fp===key){var total=desp.reduce(function(s,dd){return s+(dd[key]||0)},0);pl.push(d);pd.push(total);pc.push(colors[i%colors.length])}
+    });
     destroyChart('chartDespachadorTotal');chartInstances['chartDespachadorTotal']=new Chart(document.getElementById('chartDespachadorTotal'),{type:'doughnut',data:{labels:pl,datasets:[{data:pd,backgroundColor:pc,borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:14}},tooltip:tooltipStyle,datalabels:dlPie},cutout:'55%'}});
 }
 function renderAllCharts(){renderEstibaCharts();renderRecepcionCharts();renderLotesCharts();renderDespachadorCharts()}
