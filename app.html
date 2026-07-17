@@ -11,9 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        :root{--sw:260px;--hh:60px;--bg:#fff;--bgs:#f8fafc;--bd:#e5e7eb;--tx:#111827;--t2:#6b7280;--bl:#2563eb;--gn:#16a34a;--or:#ea580c;--rd:#dc2626;--pu:#7c3aed;--cy:#0891b2;--sh:0 1px 3px rgba(0,0,0,.06)}
+        :root{--sw:260px;--hh:60px;--bg:#fff;--bgs:#f8fafc;--bd:#e5e7eb;--tx:#111827;--t2:#6b7280;--bl:#2563eb;--gn:#16a34a;--or:#ea580c;--rd:#dc2626;--pu:#7c3aed;--cy:#0891b2}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
-        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(37,99,235,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.03) 1px,transparent 1px);background-size:100px 100px;pointer-events:none;z-index:0}
         .sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bgs);border-right:1px solid var(--bd);z-index:100;transition:transform .3s;display:flex;flex-direction:column;overflow-y:auto}
         .sidebar.collapsed{transform:translateX(calc(-1*var(--sw)))}
         .sidebar-header{padding:20px;border-bottom:1px solid var(--bd);text-align:center}
@@ -25,14 +24,12 @@
         .sidebar-item:hover{background:rgba(37,99,235,.05);color:var(--tx)}
         .sidebar-item.active{background:rgba(37,99,235,.08);border-left-color:var(--bl);color:var(--bl);font-weight:600}
         .sidebar-item i{width:20px;text-align:center;font-size:14px}
-        .sidebar-item.dashboard-item{background:rgba(37,99,235,.05);border-left:3px solid var(--bl);color:var(--bl);font-weight:700;margin:4px 8px;border-radius:6px}
-        .sidebar-item.dashboard-item:hover{background:rgba(37,99,235,.12)}
+        .sidebar-item.dash{background:rgba(37,99,235,.05);border-left:3px solid var(--bl);color:var(--bl);font-weight:700;margin:4px 8px;border-radius:6px}
         .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--bd);font-size:11px;color:var(--t2);line-height:1.6}
         .main-content{margin-left:var(--sw);min-height:100vh;transition:margin-left .3s;position:relative;z-index:1}
         .main-content.expanded{margin-left:0}
         .header{position:sticky;top:0;height:var(--hh);background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:50}
         .menu-toggle{background:none;border:none;color:var(--tx);font-size:18px;cursor:pointer;padding:8px;border-radius:6px}
-        .menu-toggle:hover{background:rgba(0,0,0,.05)}
         .header-title{font-size:18px;font-weight:800;color:var(--bl);letter-spacing:.5px}
         .header-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
         .hbtn{padding:8px 16px;border:1px solid var(--bd);background:#fff;color:var(--tx);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:'Inter',sans-serif}
@@ -44,35 +41,40 @@
         .section.active{display:block}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         .section-label{font-size:12px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--bd)}
-        .form-card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:20px;box-shadow:var(--sh);margin-bottom:20px}
+        .form-card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
         .form-card h3{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
         .form-card h3 i{color:var(--bl)}
-        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-        .form-group{display:flex;flex-direction:column;gap:4px}
-        .form-group label{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
-        .form-group input,.form-group select,.form-group textarea{padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--tx);outline:none;background:#fff}
-        .form-group input:focus,.form-group select:focus{border-color:var(--bl)}
-        .form-group textarea{resize:vertical;min-height:60px}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+        .fg{display:flex;flex-direction:column;gap:4px}
+        .fg label{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+        .fg input,.fg select,.fg textarea{padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--tx);outline:none;background:#fff}
+        .fg input:focus,.fg select:focus{border-color:var(--bl)}
+        .fg textarea{resize:vertical;min-height:60px}
         .form-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-        .combo-wrap{}
-        .combo-row{display:flex;gap:4px}
-        .combo-row select{flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--tx);outline:none;background:#fff;cursor:pointer}
-        .combo-row select:focus{border-color:var(--bl)}
-        .combo-add{width:36px;height:38px;border:1px solid var(--bd);border-radius:8px;background:var(--gn);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
-        .combo-add:hover{background:#15803d;transform:scale(1.05)}
-        .combo-new{display:none;margin-top:6px;gap:4px}
-        .combo-new.show{display:flex}
-        .combo-new input{flex:1;padding:8px 10px;border:1px solid var(--gn);border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
-        .combo-new .btn-ok{padding:8px 12px;border:none;border-radius:6px;background:var(--gn);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
-        .combo-new .btn-no{padding:8px 12px;border:none;border-radius:6px;background:var(--rd);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .cw{position:relative;overflow:visible}
+        .cr{display:flex;gap:8px;align-items:stretch}
+        .cr select{flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--tx);outline:none;background:#fff;cursor:pointer}
+        .cr select:focus{border-color:var(--bl)}
+        .cr input{flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--tx);outline:none;background:#fff}
+        .cr input:focus{border-color:var(--bl)}
+        .cbtn{min-width:42px;height:42px;border:1px solid var(--bd);border-radius:8px;background:var(--gn);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;line-height:1;position:relative;z-index:2}
+        .cbtn:hover{background:#15803d;transform:scale(1.05)}
+        .cbtn-del{background:var(--rd);min-width:42px}
+        .cbtn-del:hover{background:#b91c1c}
+        .cbtn-sm{min-width:32px;height:32px;font-size:14px;border-radius:6px}
+        .cn{display:none;margin-top:6px;gap:4px}
+        .cn.show{display:flex}
+        .cn input{flex:1;padding:8px 10px;border:1px solid var(--gn);border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
+        .cn .bo{padding:8px 12px;border:none;border-radius:6px;background:var(--gn);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .cn .bx{padding:8px 12px;border:none;border-radius:6px;background:var(--rd);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
         .btn{padding:10px 18px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:'Inter',sans-serif}
-        .btn-p{background:var(--bl);color:#fff}.btn-p:hover{background:#1d4ed8;transform:translateY(-1px)}
-        .btn-s{background:var(--gn);color:#fff}.btn-s:hover{background:#15803d}
-        .btn-d{background:var(--rd);color:#fff}.btn-d:hover{background:#b91c1c}
-        .btn-o{background:#fff;color:var(--tx);border:1px solid var(--bd)}.btn-o:hover{background:#f1f5f9}
-        .btn-sm{padding:6px 12px;font-size:11px}
+        .bp{background:var(--bl);color:#fff}.bp:hover{background:#1d4ed8;transform:translateY(-1px)}
+        .bs{background:var(--gn);color:#fff}.bs:hover{background:#15803d}
+        .bd{background:var(--rd);color:#fff}.bd:hover{background:#b91c1c}
+        .bo{background:#fff;color:var(--tx);border:1px solid var(--bd)}.bo:hover{background:#f1f5f9}
+        .bsm{padding:6px 12px;font-size:11px}
         .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
-        .kpi-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px;box-shadow:var(--sh);position:relative;overflow:hidden}
+        .kpi-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden}
         .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
         .kpi-card:nth-child(1)::before{background:var(--bl)}.kpi-card:nth-child(2)::before{background:var(--or)}.kpi-card:nth-child(3)::before{background:var(--rd)}.kpi-card:nth-child(4)::before{background:var(--pu)}
         .kpi-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px}
@@ -83,25 +85,21 @@
         .kpi-label{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;font-weight:600}
         .kpi-value{font-size:28px;font-weight:900;line-height:1}
         .chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-        .chart-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px;box-shadow:var(--sh)}
+        .chart-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
         .chart-card.fw{grid-column:1/-1}
         .chart-title{font-size:14px;font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:8px;color:#000}
         .chart-title i{color:var(--bl);font-size:15px}
         .chart-subtitle{font-size:11px;color:#000;margin-bottom:14px;font-weight:500}
         .chart-container{position:relative;width:100%}.chart-container canvas{width:100%!important}
-        .data-table{width:100%;border-collapse:collapse;font-size:12px}
-        .data-table thead th{background:#f1f5f9;color:#000;padding:10px 12px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);position:sticky;top:0}
-        .data-table tbody td{padding:8px 12px;border-bottom:1px solid var(--bd);color:#000;font-weight:500}
-        .data-table tbody tr:hover{background:#f8fafc}
+        .dt{width:100%;border-collapse:collapse;font-size:12px}
+        .dt thead th{background:#f1f5f9;color:#000;padding:10px 12px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd);position:sticky;top:0}
+        .dt tbody td{padding:8px 12px;border-bottom:1px solid var(--bd);color:#000;font-weight:500}
+        .dt tbody tr:hover{background:#f8fafc}
         .badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase}
-        .bg{background:rgba(22,163,74,.1);color:var(--gn)}
-        .br{background:rgba(220,38,38,.1);color:var(--rd)}
-        .bo{background:rgba(234,88,12,.1);color:var(--or)}
-        .bb{background:rgba(37,99,235,.1);color:var(--bl)}
+        .bg{background:rgba(22,163,74,.1);color:var(--gn)}.br{background:rgba(220,38,38,.1);color:var(--rd)}.bo2{background:rgba(234,88,12,.1);color:var(--or)}.bb{background:rgba(37,99,235,.1);color:var(--bl)}
         .filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
         .filter-label{font-size:13px;color:#000;font-weight:600}
         .filter-select{background:#fff;border:1px solid var(--bd);color:var(--tx);padding:8px 12px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;font-weight:500}
-        .filter-select:focus{border-color:var(--bl)}
         .welcome-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
         .welcome-icon{font-size:56px;color:var(--bl);margin-bottom:16px;opacity:.3}
         .welcome-title{font-size:22px;font-weight:800;margin-bottom:6px}
@@ -111,30 +109,29 @@
         .upload-area i{font-size:24px;color:var(--bl);margin-bottom:8px;display:block}
         .upload-area p{font-size:12px}
         .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
-        .photo-card{border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:#fff;box-shadow:var(--sh)}
+        .photo-card{border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)}
         .photo-card img{width:100%;height:220px;object-fit:cover;display:block}
-        .photo-card .ph-info{padding:10px 12px;font-size:12px;color:var(--t2)}
-        .photo-card .ph-info strong{color:var(--tx);display:block;margin-bottom:2px;font-size:13px}
-        .photo-card .ph-del{color:var(--rd);cursor:pointer;font-size:11px;float:right}
-        .photo-card .ph-del:hover{text-decoration:underline}
+        .photo-card .pi{padding:10px 12px;font-size:12px;color:var(--t2)}
+        .photo-card .pi strong{color:var(--tx);display:block;margin-bottom:2px;font-size:13px}
+        .photo-card .pd{color:var(--rd);cursor:pointer;font-size:11px;float:right}
         .session-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:8px;font-size:12px;font-weight:600;color:var(--bl);margin-bottom:16px}
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
         .modal-overlay.show{display:flex}
         .modal{background:#fff;border-radius:12px;padding:24px;max-width:600px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 10px 25px rgba(0,0,0,.15)}
         .modal h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
         .modal h3 i{color:var(--bl)}
-        .mgmt-sec{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--bd)}
-        .mgmt-sec:last-child{border-bottom:none}
-        .mgmt-sec h4{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+        .msec{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--bd)}
+        .msec:last-child{border-bottom:none}
+        .msec h4{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
         .chip-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:28px}
         .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:#f1f5f9;border:1px solid var(--bd);border-radius:20px;font-size:12px;font-weight:500;color:var(--tx)}
-        .chip .x{color:var(--rd);cursor:pointer;font-size:11px;font-weight:700;line-height:1}
+        .chip .x{color:var(--rd);cursor:pointer;font-size:14px;font-weight:700;line-height:1;padding:0 2px}
         .chip .x:hover{color:#b91c1c}
-        .add-row{display:flex;gap:6px;max-width:350px}
-        .add-row input{flex:1;padding:8px 12px;border:1px solid var(--bd);border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
-        .add-row input:focus{border-color:var(--bl)}
-        .add-row button{padding:8px 14px;border:none;border-radius:6px;background:var(--gn);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
-        .add-row button:hover{background:#15803d}
+        .arow{display:flex;gap:6px;max-width:350px}
+        .arow input{flex:1;padding:8px 12px;border:1px solid var(--bd);border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none}
+        .arow input:focus{border-color:var(--bl)}
+        .arow button{padding:8px 14px;border:none;border-radius:6px;background:var(--gn);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+        .arow button:hover{background:#15803d}
         .loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.95);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:12px}
         .loading-overlay.show{display:flex}
         .spinner{width:40px;height:40px;border:3px solid var(--bd);border-top-color:var(--bl);border-radius:50%;animation:spin .7s linear infinite}
@@ -143,7 +140,7 @@
         .nav-btn{width:48px;height:48px;border-radius:50%;border:2px solid var(--bd);background:#fff;color:var(--tx);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 6px rgba(0,0,0,.05)}
         .nav-btn:hover{background:var(--bl);color:#fff;border-color:var(--bl);transform:scale(1.1)}
         .nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
-        .nav-label{position:fixed;bottom:80px;right:24px;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--t2);z-index:90;box-shadow:var(--sh);text-align:center}
+        .nav-label{position:fixed;bottom:80px;right:24px;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--t2);z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center}
         .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
         .toast.show{opacity:1}
         @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
@@ -151,574 +148,442 @@
     </style>
 </head>
 <body>
-<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div style="color:var(--t2);font-size:13px;font-weight:500">Cargando...</div></div>
+<div class="loading-overlay" id="ld"><div class="spinner"></div><div style="color:var(--t2);font-size:13px;font-weight:500">Cargando...</div></div>
 
-<div class="modal-overlay" id="modalImport">
-    <div class="modal">
-        <h3><i class="fas fa-file-import"></i> Importar Excel</h3>
-        <p style="font-size:13px;color:var(--t2);margin-bottom:16px">Selecciona un archivo .xlsx para importar.</p>
-        <input type="file" id="fileImport" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
-        <div class="upload-area" onclick="document.getElementById('fileImport').click()"><i class="fas fa-cloud-upload-alt"></i><p>Seleccionar archivo</p></div>
-        <div style="margin-top:16px;text-align:right"><button class="btn btn-o" onclick="closeModal('modalImport')">Cancelar</button></div>
-    </div>
-</div>
+<div class="modal-overlay" id="mImp"><div class="modal">
+    <h3><i class="fas fa-file-import"></i> Importar Excel</h3>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:16px">Selecciona un archivo .xlsx</p>
+    <input type="file" id="fImp" accept=".xlsx,.xls" style="display:none" onchange="doImport(event)">
+    <div class="upload-area" onclick="document.getElementById('fImp').click()"><i class="fas fa-cloud-upload-alt"></i><p>Seleccionar archivo</p></div>
+    <div style="margin-top:16px;text-align:right"><button class="btn bo" onclick="closeM('mImp')">Cancelar</button></div>
+</div></div>
 
-<div class="modal-overlay" id="modalOpciones">
-    <div class="modal">
-        <h3><i class="fas fa-sliders"></i> Gestionar Opciones</h3>
-        <div class="mgmt-sec">
-            <h4><i class="fas fa-tag"></i> Tipos de Producto</h4>
-            <div class="chip-list" id="listTipo"></div>
-            <div class="add-row"><input type="text" id="inpTipo" placeholder="Nuevo tipo..."><button onclick="addOpt('tipo','inpTipo')"><i class="fas fa-plus"></i> Agregar</button></div>
-        </div>
-        <div class="mgmt-sec">
-            <h4><i class="fas fa-box"></i> Productos</h4>
-            <div class="chip-list" id="listProducto"></div>
-            <div class="add-row"><input type="text" id="inpProducto" placeholder="Nuevo producto..."><button onclick="addOpt('producto','inpProducto')"><i class="fas fa-plus"></i> Agregar</button></div>
-        </div>
-        <div class="mgmt-sec">
-            <h4><i class="fas fa-industry"></i> Proveedores</h4>
-            <div class="chip-list" id="listIndustria"></div>
-            <div class="add-row"><input type="text" id="inpIndustria" placeholder="Nuevo proveedor..."><button onclick="addOpt('industria','inpIndustria')"><i class="fas fa-plus"></i> Agregar</button></div>
-        </div>
-        <div class="mgmt-sec">
-            <h4><i class="fas fa-file-invoice"></i> Ordenes (OC/OE)</h4>
-            <div class="chip-list" id="listOrden"></div>
-            <div class="add-row"><input type="text" id="inpOrden" placeholder="Nueva orden..."><button onclick="addOpt('orden','inpOrden')"><i class="fas fa-plus"></i> Agregar</button></div>
-        </div>
-        <div class="mgmt-sec">
-            <h4><i class="fas fa-user"></i> Despachadores</h4>
-            <div class="chip-list" id="listDespachador"></div>
-            <div class="add-row"><input type="text" id="inpDespachador" placeholder="Nombre del despachador..."><button onclick="addOpt('despachador','inpDespachador')"><i class="fas fa-plus"></i> Agregar</button></div>
-        </div>
-        <div style="margin-top:16px;text-align:right"><button class="btn btn-p" onclick="closeModal('modalOpciones')"><i class="fas fa-check"></i> Cerrar</button></div>
-    </div>
-</div>
+<div class="modal-overlay" id="mOpt"><div class="modal">
+    <h3><i class="fas fa-sliders"></i> Gestionar Opciones</h3>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:16px">Agrega o elimina opciones de los combos. Se guardan automaticamente.</p>
+    <div class="msec"><h4><i class="fas fa-calendar-days"></i> Dias</h4><div class="chip-list" id="lDia"></div><div class="arow"><input type="text" id="iDia" placeholder="Ej: COSTA, 1, 2..."><button onclick="addOpt('dia','iDia')"><i class="fas fa-plus"></i> Agregar</button></div></div>
+    <div class="msec"><h4><i class="fas fa-tag"></i> Tipos de Producto</h4><div class="chip-list" id="lTipo"></div><div class="arow"><input type="text" id="iTipo" placeholder="Nuevo tipo..."><button onclick="addOpt('tipo','iTipo')"><i class="fas fa-plus"></i> Agregar</button></div></div>
+    <div class="msec"><h4><i class="fas fa-box"></i> Productos</h4><div class="chip-list" id="lProd"></div><div class="arow"><input type="text" id="iProd" placeholder="Nuevo producto..."><button onclick="addOpt('producto','iProd')"><i class="fas fa-plus"></i> Agregar</button></div></div>
+    <div class="msec"><h4><i class="fas fa-industry"></i> Proveedores</h4><div class="chip-list" id="lProv"></div><div class="arow"><input type="text" id="iProv" placeholder="Nuevo proveedor..."><button onclick="addOpt('industria','iProv')"><i class="fas fa-plus"></i> Agregar</button></div></div>
+    <div class="msec"><h4><i class="fas fa-file-invoice"></i> Ordenes</h4><div class="chip-list" id="lOrd"></div><div class="arow"><input type="text" id="iOrd" placeholder="Nueva orden..."><button onclick="addOpt('orden','iOrd')"><i class="fas fa-plus"></i> Agregar</button></div></div>
+    <div class="msec"><h4><i class="fas fa-user"></i> Despachadores</h4><div class="chip-list" id="lDesp"></div><div class="arow"><input type="text" id="iDesp" placeholder="Nombre del despachador..."><button onclick="addOpt('despachador','iDesp')"><i class="fas fa-plus"></i> Agregar</button></div></div>
+    <div style="margin-top:16px;text-align:right"><button class="btn bp" onclick="closeM('mOpt')"><i class="fas fa-check"></i> Cerrar</button></div>
+</div></div>
 
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-header"><h2><i class="fas fa-truck"></i> KREZCO CARGO</h2><p>Control de Gestion</p></div>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Sesion</div>
-        <div class="sidebar-item active" data-section="config" onclick="showSection('config',this)"><i class="fas fa-cog"></i> Configuracion</div>
+        <div class="sidebar-item active" data-section="config" onclick="showSec('config',this)"><i class="fas fa-cog"></i> Configuracion</div>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Dashboard</div>
-        <div class="sidebar-item dashboard-item" data-section="dashboard" onclick="showSection('dashboard',this)"><i class="fas fa-chart-line"></i> Ver Dashboard</div>
+        <div class="sidebar-item dash" data-section="dashboard" onclick="showSec('dashboard',this)"><i class="fas fa-chart-line"></i> Ver Dashboard</div>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Carga de Datos</div>
-        <div class="sidebar-item" data-section="estiba" onclick="showSection('estiba',this)"><i class="fas fa-boxes-stacked"></i> Estiba</div>
-        <div class="sidebar-item" data-section="recepcion" onclick="showSection('recepcion',this)"><i class="fas fa-triangle-exclamation"></i> Recepcion + Fotos</div>
-        <div class="sidebar-item" data-section="lotes" onclick="showSection('lotes',this)"><i class="fas fa-clipboard-list"></i> Lotes</div>
-        <div class="sidebar-item" data-section="despachadores" onclick="showSection('despachadores',this)"><i class="fas fa-users"></i> Despachadores</div>
+        <div class="sidebar-item" data-section="estiba" onclick="showSec('estiba',this)"><i class="fas fa-boxes-stacked"></i> Estiba</div>
+        <div class="sidebar-item" data-section="recepcion" onclick="showSec('recepcion',this)"><i class="fas fa-triangle-exclamation"></i> Recepcion + Fotos</div>
+        <div class="sidebar-item" data-section="lotes" onclick="showSec('lotes',this)"><i class="fas fa-clipboard-list"></i> Lotes</div>
+        <div class="sidebar-item" data-section="despachadores" onclick="showSec('despachadores',this)"><i class="fas fa-users"></i> Despachadores</div>
     </div>
-    <div class="sidebar-footer" id="sidebarSessionInfo">Sin sesion activa</div>
+    <div class="sidebar-footer" id="sInfo">Sin sesion activa</div>
 </nav>
 
-<main class="main-content" id="mainContent">
+<main class="main-content" id="main">
     <header class="header">
-        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <button class="menu-toggle" onclick="togSide()"><i class="fas fa-bars"></i></button>
         <div class="header-title">KREZCO CARGO</div>
         <div class="header-actions">
-            <button class="hbtn" onclick="openModal('modalOpciones')" title="Gestionar opciones"><i class="fas fa-sliders"></i> Opciones</button>
-            <button class="hbtn" onclick="openModal('modalImport')" title="Importar Excel"><i class="fas fa-file-import"></i> Importar</button>
-            <button class="hbtn grn" onclick="exportExcel()" title="Exportar Excel"><i class="fas fa-file-export"></i> Exportar</button>
-            <button class="hbtn red" onclick="clearSession()" title="Limpiar"><i class="fas fa-trash"></i></button>
+            <button class="hbtn" onclick="openM('mOpt')" title="Gestionar opciones"><i class="fas fa-sliders"></i> Opciones</button>
+            <button class="hbtn" onclick="openM('mImp')"><i class="fas fa-file-import"></i> Importar</button>
+            <button class="hbtn grn" onclick="doExport()"><i class="fas fa-file-export"></i> Exportar</button>
+            <button class="hbtn red" onclick="clearSess()"><i class="fas fa-trash"></i></button>
         </div>
     </header>
     <div class="content">
 
-        <!-- CONFIGURACION -->
-        <div class="section active" id="section-config">
-            <div class="welcome-screen" id="welcomeScreen"><div class="welcome-icon"><i class="fas fa-cog"></i></div><div class="welcome-title">Configurar Sesion</div><div class="welcome-text">Ingresa los datos de la reunion.</div></div>
+        <!-- CONFIG -->
+        <div class="section active" id="sec-config">
+            <div class="welcome-screen" id="welc"><div class="welcome-icon"><i class="fas fa-cog"></i></div><div class="welcome-title">Configurar Sesion</div><div class="welcome-text">Ingresa los datos de la reunion.</div></div>
             <div class="form-card" style="max-width:600px;margin:0 auto">
                 <h3><i class="fas fa-clipboard-list"></i> Nueva Sesion</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Orden de Compra</label><div class="combo-wrap"><div class="combo-row"><select id="cfgOC"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('oc')" title="Nueva OC">+</button></div><div class="combo-new" id="newOCWrap"><input type="text" id="newOC" placeholder="Ej: 03OC"><button class="btn-ok" onclick="addOpt('oc','newOC')">OK</button><button class="btn-no" onclick="toggleNew('oc')">X</button></div></div></div>
-                    <div class="form-group"><label>Orden de Entrega</label><div class="combo-wrap"><div class="combo-row"><select id="cfgOE"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('oe')" title="Nueva OE">+</button></div><div class="combo-new" id="newOEWrap"><input type="text" id="newOE" placeholder="Ej: 05OE"><button class="btn-ok" onclick="addOpt('oe','newOE')">OK</button><button class="btn-no" onclick="toggleNew('oe')">X</button></div></div></div>
-                    <div class="form-group"><label>Mes</label><select id="cfgMes"><option value="">Seleccionar...</option><option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option><option value="MARZO">Marzo</option><option value="ABRIL">Abril</option><option value="MAYO">Mayo</option><option value="JUNIO">Junio</option><option value="JULIO">Julio</option><option value="AGOSTO">Agosto</option><option value="SEPTIEMBRE">Septiembre</option><option value="OCTUBRE">Octubre</option><option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option></select></div>
-                    <div class="form-group"><label>Ano</label><input type="number" id="cfgAno" placeholder="2026"></div>
+                    <div class="fg"><label>OC</label><div class="cw"><div class="cr"><select id="cfgOC"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('oc')" title="Nueva OC">+</button></div><div class="cn" id="nOCWrap"><input type="text" id="nOC" placeholder="Ej: 03OC"><button class="bo" onclick="addOpt('oc','nOC')">OK</button><button class="bx" onclick="togNew('oc')">X</button></div></div></div>
+                    <div class="fg"><label>OE</label><div class="cw"><div class="cr"><select id="cfgOE"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('oe')" title="Nueva OE">+</button></div><div class="cn" id="nOEWrap"><input type="text" id="nOE" placeholder="Ej: 05OE"><button class="bo" onclick="addOpt('oe','nOE')">OK</button><button class="bx" onclick="togNew('oe')">X</button></div></div></div>
+                    <div class="fg"><label>Mes</label><select id="cfgMes"><option value="">Seleccionar...</option><option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option><option value="MARZO">Marzo</option><option value="ABRIL">Abril</option><option value="MAYO">Mayo</option><option value="JUNIO">Junio</option><option value="JULIO">Julio</option><option value="AGOSTO">Agosto</option><option value="SEPTIEMBRE">Septiembre</option><option value="OCTUBRE">Octubre</option><option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option></select></div>
+                    <div class="fg"><label>Ano</label><input type="number" id="cfgAno" placeholder="2026"></div>
                 </div>
-                <div class="form-actions" style="justify-content:center;margin-top:16px"><button class="btn btn-p" onclick="saveSession()"><i class="fas fa-check"></i> Guardar Sesion</button></div>
+                <div class="form-actions" style="justify-content:center;margin-top:16px"><button class="btn bp" onclick="saveSess()"><i class="fas fa-check"></i> Guardar Sesion</button></div>
             </div>
         </div>
 
-        <!-- DASHBOARD (SOLO GRAFICAS) -->
-        <div class="section" id="section-dashboard">
-            <div id="dashBadge"></div>
+        <!-- DASHBOARD -->
+        <div class="section" id="sec-dashboard">
+            <div id="dBdg"></div>
             <div class="kpi-grid">
-                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-boxes-stacked"></i></div><div class="kpi-label">Total Estibas</div><div class="kpi-value" id="kpiTotal">0</div></div>
-                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-arrows-rotate"></i></div><div class="kpi-label">Con Diferencia</div><div class="kpi-value" id="kpiDif">0</div></div>
-                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-triangle-exclamation"></i></div><div class="kpi-label">Problemas Recepcion</div><div class="kpi-value" id="kpiProb">0</div></div>
-                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-bug"></i></div><div class="kpi-label">Errores Despachadores</div><div class="kpi-value" id="kpiErr">0</div></div>
+                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-boxes-stacked"></i></div><div class="kpi-label">Total Estibas</div><div class="kpi-value" id="k1">0</div></div>
+                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-arrows-rotate"></i></div><div class="kpi-label">Con Diferencia</div><div class="kpi-value" id="k2">0</div></div>
+                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-triangle-exclamation"></i></div><div class="kpi-label">Problemas Recepcion</div><div class="kpi-value" id="k3">0</div></div>
+                <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-bug"></i></div><div class="kpi-label">Errores Despachadores</div><div class="kpi-value" id="k4">0</div></div>
             </div>
-            <div class="section-label">Estiba - Verificacion vs Packing</div>
+            <div class="section-label">Estiba</div>
             <div class="chart-grid">
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-doughnut"></i> IGUAL vs DIFERENTE</div><div class="chart-subtitle">Comparacion estiba vs packing</div><div class="chart-container" style="height:300px"><canvas id="cEstiba"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Productos por Tipo</div><div class="chart-subtitle">Cantidad total por categoria</div><div class="chart-container" style="height:300px"><canvas id="cTipo"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Diferencias por Tipo</div><div class="chart-subtitle">Solo productos con diferencia</div><div class="chart-container" style="height:300px"><canvas id="cDiffTipo"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Diferencias por Dia</div><div class="chart-subtitle">Evolucion</div><div class="chart-container" style="height:300px"><canvas id="cDiffDia"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-doughnut"></i> IGUAL vs DIFERENTE</div><div class="chart-container" style="height:300px"><canvas id="cE1"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Productos por Tipo</div><div class="chart-container" style="height:300px"><canvas id="cE2"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Diferencias por Tipo</div><div class="chart-container" style="height:300px"><canvas id="cE3"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Diferencias por Dia</div><div class="chart-container" style="height:300px"><canvas id="cE4"></canvas></div></div>
             </div>
-            <div class="section-label" style="margin-top:20px">Recepcion - Errores por Proveedor y Orden</div>
+            <div class="section-label" style="margin-top:20px">Recepcion</div>
             <div class="chart-grid">
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-industry"></i> Errores por Proveedor</div><div class="chart-container" style="height:300px"><canvas id="cProveedor"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-file-invoice"></i> Errores por Orden</div><div class="chart-container" style="height:300px"><canvas id="cOrdRecep"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-industry"></i> Errores por Proveedor</div><div class="chart-container" style="height:300px"><canvas id="cR1"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-file-invoice"></i> Errores por Orden</div><div class="chart-container" style="height:300px"><canvas id="cR2"></canvas></div></div>
             </div>
-            <div class="section-label" style="margin-top:20px">Lotes - Estado por Dia</div>
+            <div class="section-label" style="margin-top:20px">Lotes</div>
             <div class="chart-grid">
-                <div class="chart-card fw"><div class="chart-title"><i class="fas fa-chart-column"></i> Lotes por Dia</div><div class="chart-subtitle">COMPLETADO / EN CURSO / PROXIMO</div><div class="chart-container" style="height:320px"><canvas id="cLotes"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> Distribucion de Estados</div><div class="chart-container" style="height:280px"><canvas id="cLotesPie"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-school"></i> Escuelas por Dia</div><div class="chart-container" style="height:280px"><canvas id="cEscuelas"></canvas></div></div>
+                <div class="chart-card fw"><div class="chart-title"><i class="fas fa-chart-column"></i> Lotes por Dia</div><div class="chart-container" style="height:320px"><canvas id="cL1"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> Distribucion</div><div class="chart-container" style="height:280px"><canvas id="cL2"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-school"></i> Escuelas</div><div class="chart-container" style="height:280px"><canvas id="cL3"></canvas></div></div>
             </div>
-            <div class="section-label" style="margin-top:20px">Despachadores - Errores por Persona</div>
+            <div class="section-label" style="margin-top:20px">Despachadores</div>
             <div class="chart-grid">
-                <div class="chart-card fw"><div class="chart-title"><i class="fas fa-users"></i> Errores por Despachador y Orden</div><div class="chart-container" style="height:320px"><canvas id="cDesp"></canvas></div></div>
-                <div class="chart-card"><div class="chart-title"><i class="fas fa-user-shield"></i> Total por Despachador</div><div class="chart-container" style="height:280px"><canvas id="cDespPie"></canvas></div></div>
+                <div class="chart-card fw"><div class="chart-title"><i class="fas fa-users"></i> Por Orden</div><div class="chart-container" style="height:320px"><canvas id="cD1"></canvas></div></div>
+                <div class="chart-card"><div class="chart-title"><i class="fas fa-user-shield"></i> Total</div><div class="chart-container" style="height:280px"><canvas id="cD2"></canvas></div></div>
             </div>
         </div>
 
-        <!-- ESTIBA (formulario + tabla) -->
-        <div class="section" id="section-estiba">
-            <div id="badgeEstiba"></div>
+        <!-- ESTIBA -->
+        <div class="section" id="sec-estiba">
+            <div id="bEst"></div>
             <div class="form-card">
-                <h3><i class="fas fa-plus-circle"></i> Agregar Registro de Estiba</h3>
+                <h3><i class="fas fa-plus-circle"></i> Agregar Estiba</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Dia</label><input type="number" id="estDia" min="1" max="31" placeholder="1"></div>
-                    <div class="form-group"><label>Tipo</label><div class="combo-wrap"><div class="combo-row"><select id="estTipo"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('tipo')">+</button></div><div class="combo-new" id="newTipoWrap"><input type="text" id="newTipoForm" placeholder="Nuevo tipo..."><button class="btn-ok" onclick="addOpt('tipo','newTipoForm')">OK</button><button class="btn-no" onclick="toggleNew('tipo')">X</button></div></div></div>
-                    <div class="form-group"><label>Producto Estiba</label><div class="combo-wrap"><div class="combo-row"><select id="estProd"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('producto')">+</button></div><div class="combo-new" id="newProductoWrap"><input type="text" id="newProductoForm" placeholder="Nuevo..."><button class="btn-ok" onclick="addOpt('producto','newProductoForm')">OK</button><button class="btn-no" onclick="toggleNew('producto')">X</button></div></div></div>
-                    <div class="form-group"><label>Producto Packing</label><div class="combo-wrap"><div class="combo-row"><select id="estPack"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('producto_packing')">+</button></div><div class="combo-new" id="newProducto_packingWrap"><input type="text" id="newProducto_packingForm" placeholder="Nuevo..."><button class="btn-ok" onclick="addOpt('producto_packing','newProducto_packingForm')">OK</button><button class="btn-no" onclick="toggleNew('producto_packing')">X</button></div></div></div>
-                    <div class="form-group"><label>Cantidad</label><input type="number" id="estCant" min="0" placeholder="0"></div>
+                    <div class="fg"><label>Dia</label><div class="cw"><div class="cr"><select id="eDia"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('dia')" title="Nuevo dia">+</button></div><div class="cn" id="nDiaWrap"><input type="text" id="nDia" placeholder="Ej: COSTA, 1, 2..."><button class="bo" onclick="addOpt('dia','nDia')">OK</button><button class="bx" onclick="togNew('dia')">X</button></div></div></div>
+                    <div class="fg"><label>Tipo</label><div class="cw"><div class="cr"><select id="eTipo"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('tipo')">+</button></div><div class="cn" id="nTipoWrap"><input type="text" id="nTipoF" placeholder="Nuevo tipo..."><button class="bo" onclick="addOpt('tipo','nTipoF')">OK</button><button class="bx" onclick="togNew('tipo')">X</button></div></div></div>
+                    <div class="fg"><label>Producto Estiba</label><div class="cw"><div class="cr"><select id="eProd"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('producto')">+</button></div><div class="cn" id="nProdWrap"><input type="text" id="nProdF" placeholder="Nuevo..."><button class="bo" onclick="addOpt('producto','nProdF')">OK</button><button class="bx" onclick="togNew('producto')">X</button></div></div></div>
+                    <div class="fg"><label>Producto Packing</label><div class="cw"><div class="cr"><select id="ePack"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('producto_packing')">+</button></div><div class="cn" id="nProd_pWrap"><input type="text" id="nProd_pF" placeholder="Nuevo..."><button class="bo" onclick="addOpt('producto_packing','nProd_pF')">OK</button><button class="bx" onclick="togNew('producto_packing')">X</button></div></div></div>
+                    <div class="fg"><label>Cantidad</label><input type="number" id="eCant" min="0" placeholder="0"></div>
                 </div>
-                <div class="form-actions"><button class="btn btn-p" onclick="addEstiba()"><i class="fas fa-plus"></i> Agregar</button><button class="btn btn-o" onclick="clrEstiba()"><i class="fas fa-eraser"></i> Limpiar</button></div>
+                <div class="form-actions"><button class="btn bp" onclick="addEst()"><i class="fas fa-plus"></i> Agregar</button><button class="btn bo" onclick="clrEst()"><i class="fas fa-eraser"></i> Limpiar</button></div>
             </div>
             <div class="form-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0"><i class="fas fa-table"></i> Registros</h3><div class="filter-bar" style="margin:0"><span class="filter-label">Dia:</span><select class="filter-select" id="fDia" onchange="renderEstCharts()"><option value="todos">Todos</option></select></div></div>
-                <div style="max-height:400px;overflow-y:auto"><table class="data-table" id="tEst"><thead><tr><th>Dia</th><th>Tipo</th><th>Estiba</th><th>Packing</th><th>Cant.</th><th>Diferencia</th><th>Cambio</th><th></th></tr></thead><tbody></tbody></table></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0"><i class="fas fa-table"></i> Registros</h3><div class="filter-bar" style="margin:0"><span class="filter-label">Dia:</span><select class="filter-select" id="fDia" onchange="renderDash()"><option value="todos">Todos</option></select></div></div>
+                <div style="max-height:400px;overflow-y:auto"><table class="dt" id="tE"><thead><tr><th>Dia</th><th>Tipo</th><th>Estiba</th><th>Packing</th><th>Cant.</th><th>Diferencia</th><th>Cambio</th><th></th></tr></thead><tbody></tbody></table></div>
             </div>
         </div>
 
-        <!-- RECEPCION + FOTOS (formulario + tabla) -->
-        <div class="section" id="section-recepcion">
-            <div id="badgeRecep"></div>
+        <!-- RECEPCION + FOTOS -->
+        <div class="section" id="sec-recepcion">
+            <div id="bRep"></div>
             <div class="form-card">
                 <h3><i class="fas fa-plus-circle"></i> Agregar Error de Recepcion</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Proveedor</label><div class="combo-wrap"><div class="combo-row"><select id="repProv"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('industria')">+</button></div><div class="combo-new" id="newIndustriaWrap"><input type="text" id="newIndustriaForm" placeholder="Nuevo..."><button class="btn-ok" onclick="addOpt('industria','newIndustriaForm')">OK</button><button class="btn-no" onclick="toggleNew('industria')">X</button></div></div></div>
-                    <div class="form-group"><label>Problema</label><select id="repProb"><option value="SI">SI</option><option value="NO">NO</option></select></div>
-                    <div class="form-group"><label>Orden</label><div class="combo-wrap"><div class="combo-row"><select id="repOrd"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('orden_recep')">+</button></div><div class="combo-new" id="newOrden_recepWrap"><input type="text" id="newOrden_recepForm" placeholder="Ej: 02OC-01OE"><button class="btn-ok" onclick="addOpt('orden','newOrden_recepForm')">OK</button><button class="btn-no" onclick="toggleNew('orden_recep')">X</button></div></div></div>
-                    <div class="form-group"><label>Guia</label><input type="text" id="repGuia" placeholder="Ej: 9147"></div>
+                    <div class="fg"><label>Proveedor</label><div class="cw"><div class="cr"><select id="rProv"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('industria')">+</button></div><div class="cn" id="nIndWrap"><input type="text" id="nIndF" placeholder="Nuevo..."><button class="bo" onclick="addOpt('industria','nIndF')">OK</button><button class="bx" onclick="togNew('industria')">X</button></div></div></div>
+                    <div class="fg"><label>Problema</label><select id="rProb"><option value="SI">SI</option><option value="NO">NO</option></select></div>
+                    <div class="fg"><label>Orden</label><div class="cw"><div class="cr"><select id="rOrd"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('orden_r')">+</button></div><div class="cn" id="nOrd_rWrap"><input type="text" id="nOrd_rF" placeholder="Ej: 02OC-01OE"><button class="bo" onclick="addOpt('orden','nOrd_rF')">OK</button><button class="bx" onclick="togNew('orden_r')">X</button></div></div></div>
+                    <div class="fg"><label>Guia</label><input type="text" id="rGuia" placeholder="Ej: 9147"></div>
                 </div>
-                <div class="form-actions"><button class="btn btn-p" onclick="addRecep()"><i class="fas fa-plus"></i> Agregar</button><button class="btn btn-o" onclick="clrRecep()"><i class="fas fa-eraser"></i> Limpiar</button></div>
+                <div class="form-actions"><button class="btn bp" onclick="addRep()"><i class="fas fa-plus"></i> Agregar</button><button class="btn bo" onclick="clrRep()"><i class="fas fa-eraser"></i> Limpiar</button></div>
             </div>
             <div class="form-card">
-                <h3><i class="fas fa-camera"></i> Fotos por Numero de Guia</h3>
+                <h3><i class="fas fa-camera"></i> Fotos por Guia</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Numero de Guia</label><input type="text" id="fotoGuia" placeholder="Ej: 9147"></div>
-                    <div class="form-group"><label>Descripcion</label><textarea id="fotoDesc" placeholder="Describe el problema..."></textarea></div>
+                    <div class="fg"><label>Guia</label><input type="text" id="fGuia" placeholder="Ej: 9147"></div>
+                    <div class="fg"><label>Descripcion</label><textarea id="fDesc" placeholder="Problema..."></textarea></div>
                 </div>
-                <div style="margin-top:12px"><div class="upload-area" onclick="document.getElementById('fileFoto').click()"><i class="fas fa-cloud-upload-alt"></i><p>Subir foto(s) - Se guardan con la guia</p></div><input type="file" id="fileFoto" accept="image/*" multiple style="display:none" onchange="handlePhotos(event)"></div>
-                <div class="photo-grid" id="photoGrid"></div>
-                <div class="form-actions" style="margin-top:12px"><button class="btn btn-s" onclick="savePhotos()"><i class="fas fa-save"></i> Guardar Fotos con Guia</button></div>
+                <div style="margin-top:12px"><div class="upload-area" onclick="document.getElementById('fFile').click()"><i class="fas fa-cloud-upload-alt"></i><p>Subir foto(s)</p></div><input type="file" id="fFile" accept="image/*" multiple style="display:none" onchange="handleF(event)"></div>
+                <div class="photo-grid" id="pGrid"></div>
+                <div class="form-actions" style="margin-top:12px"><button class="btn bs" onclick="saveF()"><i class="fas fa-save"></i> Guardar Fotos con Guia</button></div>
             </div>
             <div class="form-card">
-                <h3><i class="fas fa-table"></i> Registros de Recepcion</h3>
+                <h3><i class="fas fa-table"></i> Recepcion</h3>
                 <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
-                    <div class="filter-bar" style="margin:0"><span class="filter-label">Proveedor:</span><select class="filter-select" id="fProv" onchange="renderRepCharts()"><option value="todos">Todos</option></select></div>
-                    <div class="filter-bar" style="margin:0"><span class="filter-label">Orden:</span><select class="filter-select" id="fOrdRep" onchange="renderRepCharts()"><option value="todas">Todas</option></select></div>
+                    <div class="filter-bar" style="margin:0"><span class="filter-label">Proveedor:</span><select class="filter-select" id="fProv" onchange="renderDash()"><option value="todos">Todos</option></select></div>
+                    <div class="filter-bar" style="margin:0"><span class="filter-label">Orden:</span><select class="filter-select" id="fOrdR" onchange="renderDash()"><option value="todas">Todas</option></select></div>
                 </div>
-                <div style="max-height:300px;overflow-y:auto"><table class="data-table" id="tRep"><thead><tr><th>Proveedor</th><th>Problema</th><th>Orden</th><th>Guia</th><th></th></tr></thead><tbody></tbody></table></div>
+                <div style="max-height:300px;overflow-y:auto"><table class="dt" id="tR"><thead><tr><th>Proveedor</th><th>Problema</th><th>Orden</th><th>Guia</th><th></th></tr></thead><tbody></tbody></table></div>
             </div>
-            <div id="fotosRecepcion"></div>
+            <div id="fRec"></div>
         </div>
 
-        <!-- LOTES (formulario + tabla) -->
-        <div class="section" id="section-lotes">
-            <div id="badgeLotes"></div>
+        <!-- LOTES -->
+        <div class="section" id="sec-lotes">
+            <div id="bLot"></div>
             <div class="form-card">
                 <h3><i class="fas fa-plus-circle"></i> Agregar Lote</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Dia</label><input type="number" id="lotDia" min="1" max="31" placeholder="1"></div>
-                    <div class="form-group"><label>Estado</label><select id="lotEst"><option value="COMPLETADO">COMPLETADO</option><option value="EN CURSO">EN CURSO</option><option value="PROXIMO">PROXIMO</option></select></div>
-                    <div class="form-group"><label>Escuelas</label><input type="number" id="lotEsc" min="0" placeholder="0"></div>
+                    <div class="fg"><label>Dia</label><div class="cw"><div class="cr"><select id="lDia"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('dia_lote')">+</button></div><div class="cn" id="nDia_loteWrap"><input type="text" id="nDia_loteF" placeholder="Ej: COSTA, 1..."><button class="bo" onclick="addOpt('dia','nDia_loteF')">OK</button><button class="bx" onclick="togNew('dia_lote')">X</button></div></div></div>
+                    <div class="fg"><label>Estado</label><select id="lEst"><option value="COMPLETADO">COMPLETADO</option><option value="EN CURSO">EN CURSO</option><option value="PROXIMO">PROXIMO</option></select></div>
+                    <div class="fg"><label>Escuelas</label><input type="number" id="lEsc" min="0" placeholder="0"></div>
                 </div>
-                <div class="form-actions"><button class="btn btn-p" onclick="addLote()"><i class="fas fa-plus"></i> Agregar</button><button class="btn btn-o" onclick="clrLote()"><i class="fas fa-eraser"></i> Limpiar</button></div>
+                <div class="form-actions"><button class="btn bp" onclick="addLot()"><i class="fas fa-plus"></i> Agregar</button><button class="btn bo" onclick="clrLot()"><i class="fas fa-eraser"></i> Limpiar</button></div>
             </div>
             <div class="form-card">
-                <h3><i class="fas fa-table"></i> Registros de Lotes</h3>
-                <div style="max-height:300px;overflow-y:auto"><table class="data-table" id="tLot"><thead><tr><th>Dia</th><th>Estado</th><th>Escuelas</th><th></th></tr></thead><tbody></tbody></table></div>
+                <h3><i class="fas fa-table"></i> Lotes</h3>
+                <div style="max-height:300px;overflow-y:auto"><table class="dt" id="tL"><thead><tr><th>Dia</th><th>Estado</th><th>Escuelas</th><th></th></tr></thead><tbody></tbody></table></div>
             </div>
         </div>
 
-        <!-- DESPACHADORES (formulario + tabla) -->
-        <div class="section" id="section-despachadores">
-            <div id="badgeDesp"></div>
+        <!-- DESPACHADORES -->
+        <div class="section" id="sec-despachadores">
+            <div id="bDes"></div>
             <div class="form-card">
                 <h3><i class="fas fa-plus-circle"></i> Agregar Registro</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Orden</label><div class="combo-wrap"><div class="combo-row"><select id="despOrd"><option value="">Seleccionar...</option></select><button class="combo-add" onclick="toggleNew('orden_desp')">+</button></div><div class="combo-new" id="newOrden_despWrap"><input type="text" id="newOrden_despForm" placeholder="Ej: 5OC1OE"><button class="btn-ok" onclick="addOpt('orden','newOrden_despForm')">OK</button><button class="btn-no" onclick="toggleNew('orden_desp')">X</button></div></div></div>
+                    <div class="fg"><label>Orden</label><div class="cw"><div class="cr"><select id="dOrd"><option value="">Seleccionar...</option></select><button class="cbtn" onclick="togNew('orden_d')">+</button></div><div class="cn" id="nOrd_dWrap"><input type="text" id="nOrd_dF" placeholder="Ej: 5OC1OE"><button class="bo" onclick="addOpt('orden','nOrd_dF')">OK</button><button class="bx" onclick="togNew('orden_d')">X</button></div></div></div>
                 </div>
-                <div id="despCampos" class="form-grid" style="margin-top:12px"></div>
-                <div class="form-actions"><button class="btn btn-p" onclick="addDesp()"><i class="fas fa-plus"></i> Agregar</button><button class="btn btn-o" onclick="clrDesp()"><i class="fas fa-eraser"></i> Limpiar</button></div>
+                <div id="dFields" class="form-grid" style="margin-top:12px"></div>
+                <div class="form-actions"><button class="btn bp" onclick="addDes()"><i class="fas fa-plus"></i> Agregar</button><button class="btn bo" onclick="clrDes()"><i class="fas fa-eraser"></i> Limpiar</button></div>
             </div>
             <div class="form-card">
                 <h3><i class="fas fa-table"></i> Registros</h3>
-                <div style="max-height:300px;overflow-y:auto"><table class="data-table" id="tDesp"><thead id="tDespH"></thead><tbody></tbody></table></div>
+                <div style="max-height:300px;overflow-y:auto"><table class="dt" id="tD"><thead id="tDH"></thead><tbody></tbody></table></div>
             </div>
         </div>
     </div>
-    <div class="nav-label" id="navLabel">1 / 6</div>
-    <div class="nav-buttons"><button class="nav-btn" id="btnPrev" onclick="navSec(-1)"><i class="fas fa-chevron-left"></i></button><button class="nav-btn" id="btnNext" onclick="navSec(1)"><i class="fas fa-chevron-right"></i></button></div>
+    <div class="nav-label" id="nLab">1 / 6</div>
+    <div class="nav-buttons"><button class="nav-btn" id="bP" onclick="navS(-1)"><i class="fas fa-chevron-left"></i></button><button class="nav-btn" id="bN" onclick="navS(1)"><i class="fas fa-chevron-right"></i></button></div>
 </main>
-<div class="toast" id="toast"></div>
+<div class="toast" id="tst"></div>
 
 <script>
 Chart.register(ChartDataLabels);
-var CI={};var secOrd=['config','dashboard','estiba','recepcion','lotes','despachadores'];var curIdx=0;var sess=null;var pendFotos=[];
-var tTip={backgroundColor:'#fff',titleColor:'#111827',bodyColor:'#6b7280',borderColor:'#e5e7eb',borderWidth:1,padding:10,cornerRadius:8,titleFont:{family:'Inter',size:12,weight:'700'},bodyFont:{family:'Inter',size:11}};
-var dlS={color:'#000',font:{weight:'800',size:13,family:'Inter'},formatter:function(v){return v}};
-var dlL={color:'#000',font:{weight:'900',size:15,family:'Inter'},formatter:function(v){return v}};
-var dlP={color:'#fff',font:{weight:'800',size:14,family:'Inter'},formatter:function(v,c){var t=c.chart.data.datasets[0].data.reduce(function(a,b){return a+b},0);if(!t)return'';return v+'\n'+Math.round(v/t*100)+'%'},textAlign:'center'};
-var defOpts={tipo:['EXTRUIDOS','GALLETA DULCE','GALLETA RELLENA','GALLETA SAL','GRANOLA','NECTAR','PURE','JUGO'],producto:['EX. JAMON SERRANO','EX. POLLO A LA BRASA','GALLETA DULCE NARANJA MIEL','GALLETA RELLENA FRUTOS ROJOS','GALLETA RELLENA FRUTOS AMARILLOS','GALLETA SAL TOMATE QUESO','GRANOLA CHOCOPASAS','PURE MANGO PERA','NECTAR PERA','NECTAR PERA MANGO','NECTAR PERA BANANO','GALLETA MARACUYA'],producto_packing:['EX. JAMON SERRANO','EX. POLLO A LA BRASA','GALLETA DULCE NARANJA MIEL','GALLETA RELLENA FRUTOS ROJOS','GALLETA RELLENA FRUTOS AMARILLOS','GALLETA SAL TOMATE QUESO','GRANOLA CHOCOPASAS','PURE MANGO PERA','NECTAR PERA','NECTAR PERA MANGO','NECTAR PERA BANANO','GALLETA MARACUYA'],industria:['NUTRI','GUSTAPAN','DELENCANTO','VITA','SUPERIOR','DAVILA'],oc:['01OC','02OC','03OC','04OC','05OC'],oe:['01OE','02OE','03OE','04OE','05OE'],orden:['01OC-08OE','02OC-01OE','02OC-02OE','02OC-03OE','03OC-02OE','03OC-03OE','04OC-02OE','05OC-01OE','05OC-04OE','05OC-05OE'],despachador:['CARLOS SANTI','JONATAN CISNEROS','STALYN SANCHEZ']};
+var CI={},secO=['config','dashboard','estiba','recepcion','lotes','despachadores'],cI=0,sess=null,pF=[];
+var tS={backgroundColor:'#fff',titleColor:'#111827',bodyColor:'#6b7280',borderColor:'#e5e7eb',borderWidth:1,padding:10,cornerRadius:8,titleFont:{family:'Inter',size:12,weight:'700'},bodyFont:{family:'Inter',size:11}};
+var dS={color:'#000',font:{weight:'800',size:13,family:'Inter'},formatter:function(v){return v}};
+var dL={color:'#000',font:{weight:'900',size:15,family:'Inter'},formatter:function(v){return v}};
+var dP={color:'#fff',font:{weight:'800',size:14,family:'Inter'},formatter:function(v,c){var t=c.chart.data.datasets[0].data.reduce(function(a,b){return a+b},0);if(!t)return'';return v+'\n'+Math.round(v/t*100)+'%'},textAlign:'center'};
 
-function gOpts(k){try{return JSON.parse(localStorage.getItem('ko_'+k))}catch(e){return null}}
-function sOpts(k,v){localStorage.setItem('ko_'+k,JSON.stringify(v))}
-function lOpts(k){return gOpts(k)||[]}
-function initOpts(){Object.keys(defOpts).forEach(function(k){if(!gOpts(k))sOpts(k,defOpts[k])})}
+var dOpts={
+    dia:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','COSTA'],
+    tipo:['EXTRUIDOS','GALLETA DULCE','GALLETA RELLENA','GALLETA SAL','GRANOLA','NECTAR','PURE','JUGO'],
+    producto:['EX. JAMON SERRANO','EX. POLLO A LA BRASA','GALLETA DULCE NARANJA MIEL','GALLETA RELLENA FRUTOS ROJOS','GALLETA RELLENA FRUTOS AMARILLOS','GALLETA SAL TOMATE QUESO','GRANOLA CHOCOPASAS','PURE MANGO PERA','NECTAR PERA','NECTAR PERA MANGO','NECTAR PERA BANANO','GALLETA MARACUYA'],
+    producto_packing:['EX. JAMON SERRANO','EX. POLLO A LA BRASA','GALLETA DULCE NARANJA MIEL','GALLETA RELLENA FRUTOS ROJOS','GALLETA RELLENA FRUTOS AMARILLOS','GALLETA SAL TOMATE QUESO','GRANOLA CHOCOPASAS','PURE MANGO PERA','NECTAR PERA','NECTAR PERA MANGO','NECTAR PERA BANANO','GALLETA MARACUYA'],
+    industria:['NUTRI','GUSTAPAN','DELENCANTO','VITA','SUPERIOR','DAVILA'],
+    oc:['01OC','02OC','03OC','04OC','05OC'],oe:['01OE','02OE','03OE','04OE','05OE'],
+    orden:['01OC-08OE','02OC-01OE','02OC-02OE','02OC-03OE','03OC-02OE','03OC-03OE','04OC-02OE','05OC-01OE','05OC-04OE','05OC-05OE'],
+    despachador:['CARLOS SANTI','JONATAN CISNEROS','STALYN SANCHEZ']
+};
 
-function toggleNew(type){
-    var m={tipo:'newTipoWrap',producto:'newProductoWrap',producto_packing:'newProducto_packingWrap',industria:'newIndustriaWrap',orden_recep:'newOrden_recepWrap',orden_desp:'newOrden_despWrap',oc:'newOCWrap',oe:'newOEWrap'};
-    var w=document.getElementById(m[type]);if(!w)return;
-    w.classList.toggle('show');
-    if(w.classList.contains('show')){var i=w.querySelector('input');if(i)i.focus()}
+function gO(k){try{return JSON.parse(localStorage.getItem('ko_'+k))}catch(e){return null}}
+function sO(k,v){localStorage.setItem('ko_'+k,JSON.stringify(v))}
+function lO(k){return gO(k)||[]}
+function initO(){Object.keys(dOpts).forEach(function(k){if(!gO(k))sO(k,dOpts[k])})}
+
+function togNew(t){
+    var m={dia:'nDiaWrap',dia_lote:'nDia_loteWrap',tipo:'nTipoWrap',producto:'nProdWrap',producto_packing:'nProd_pWrap',industria:'nIndWrap',orden_r:'nOrd_rWrap',orden_d:'nOrd_dWrap',oc:'nOCWrap',oe:'nOEWrap'};
+    var w=document.getElementById(m[t]);if(!w)return;w.classList.toggle('show');if(w.classList.contains('show')){var i=w.querySelector('input');if(i)i.focus()}
 }
 
 function addOpt(type,inpId){
-    var el=document.getElementById(inpId);if(!el){return}
-    var v=el.value.trim().toUpperCase();
-    if(!v){toast('Escribe un valor');return}
-    var opts=lOpts(type);
-    if(opts.indexOf(v)!==-1){toast('Ya existe');el.value='';return}
-    opts.push(v);opts.sort();sOpts(type,opts);
-    el.value='';
-    var m={tipo:'newTipoWrap',producto:'newProductoWrap',producto_packing:'newProducto_packingWrap',industria:'newIndustriaWrap',orden_recep:'newOrden_recepWrap',orden_desp:'newOrden_despWrap',oc:'newOCWrap',oe:'newOEWrap'};
-    var w=m[type]?document.getElementById(m[type]):null;
-    if(w)w.classList.remove('show');
-    popAll();renderChips();toast('Agregado: '+v);
+    var el=document.getElementById(inpId);if(!el)return;
+    var v=el.value.trim();if(!v){toast('Escribe un valor');return}
+    var opts=lO(type);if(opts.indexOf(v)!==-1){toast('Ya existe: '+v);el.value='';return}
+    opts.push(v);opts.sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase())});sO(type,opts);
+    el.value='';popAll();renderChips();toast('Agregado: '+v);
 }
+function rmOpt(type,val){sO(type,lO(type).filter(function(o){return o!==val}));popAll();renderChips();toast('Eliminado: '+val)}
 
-function rmOpt(type,val){
-    sOpts(type,lOpts(type).filter(function(o){return o!==val}));
-    popAll();renderChips();toast('Eliminado: '+val);
-}
-
-function popSel(id,key,sv){
-    var s=document.getElementById(id);if(!s)return;var cv=sv||s.value;
-    s.innerHTML='<option value="">Seleccionar...</option>';
-    lOpts(key).forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o)});
-    if(cv)s.value=cv;
-}
-
+function popSel(id,key){var s=document.getElementById(id);if(!s)return;var cv=s.value;s.innerHTML='<option value="">Seleccionar...</option>';lO(key).forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o)});if(cv)s.value=cv}
 function popAll(){
     popSel('cfgOC','oc');popSel('cfgOE','oe');
-    popSel('estTipo','tipo');popSel('estProd','producto');popSel('estPack','producto_packing');
-    popSel('repProv','industria');popSel('repOrd','orden');popSel('despOrd','orden');
-    buildDespHead();buildDespFields();popDespFilter();
+    popSel('eDia','dia');popSel('eTipo','tipo');popSel('eProd','producto');popSel('ePack','producto_packing');
+    popSel('rProv','industria');popSel('rOrd','orden');popSel('dOrd','orden');
+    popSel('lDia','dia');
+    buildDH();buildDF();popDF();
 }
-
 function renderChips(){
-    [{k:'tipo',id:'listTipo'},{k:'producto',id:'listProducto'},{k:'industria',id:'listIndustria'},{k:'orden',id:'listOrden'},{k:'despachador',id:'listDespachador'}].forEach(function(p){
+    [{k:'dia',id:'lDia'},{k:'tipo',id:'lTipo'},{k:'producto',id:'lProd'},{k:'industria',id:'lProv'},{k:'orden',id:'lOrd'},{k:'despachador',id:'lDesp'}].forEach(function(p){
         var el=document.getElementById(p.id);if(!el)return;el.innerHTML='';
-        lOpts(p.k).forEach(function(v){
-            var c=document.createElement('span');c.className='chip';
-            c.innerHTML=v+' <span class="x" onclick="rmOpt(\''+p.k+'\',\''+v.replace(/'/g,"\\'")+'\')">&times;</span>';
-            el.appendChild(c);
-        });
+        lO(p.k).forEach(function(v){var c=document.createElement('span');c.className='chip';var sp=document.createElement('span');sp.textContent=v;var xb=document.createElement('span');xb.className='x';xb.textContent='\u00d7';xb.setAttribute('data-type',p.k);xb.setAttribute('data-val',v);xb.onclick=function(){rmOpt(this.getAttribute('data-type'),this.getAttribute('data-val'))};c.appendChild(sp);c.appendChild(xb);el.appendChild(c)});
     });
 }
 
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainContent').classList.toggle('expanded')}
-function showSection(id,el){
+function togSide(){document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('main').classList.toggle('expanded')}
+function showSec(id,el){
     document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
     document.querySelectorAll('.sidebar-item').forEach(function(i){i.classList.remove('active')});
-    document.getElementById('section-'+id).classList.add('active');
-    if(el)el.classList.add('active');
-    curIdx=secOrd.indexOf(id);updNav();
-    if(id==='dashboard'&&sess)renderDash();
+    document.getElementById('sec-'+id).classList.add('active');if(el)el.classList.add('active');
+    cI=secO.indexOf(id);updN();
+    if(id==='dashboard')renderDash();
 }
-function navSec(d){var n=curIdx+d;if(n<0||n>=secOrd.length)return;showSection(secOrd[n],document.querySelector('[data-section="'+secOrd[n]+'"]'))}
-function updNav(){document.getElementById('btnPrev').disabled=curIdx===0;document.getElementById('btnNext').disabled=curIdx===secOrd.length-1;document.getElementById('navLabel').textContent=(curIdx+1)+' / '+secOrd.length}
-function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},3000)}
-function openModal(id){document.getElementById(id).classList.add('show')}
-function closeModal(id){document.getElementById(id).classList.remove('show')}
-function dChart(id){if(CI[id]){CI[id].destroy();delete CI[id]}}
-function sKey(){return sess?'ks_'+sess.mes+'_'+sess.ano+'_'+sess.oc+'_'+sess.oe:''}
-function fKey(){return sKey()+'_fotos'}
-function saveAll(){if(!session)return;localStorage.setItem(sKey(),JSON.stringify({est:gEst(),rep:gRep(),lot:gLot(),des:gDes()}))}
-function loadAll(){if(!session)return null;var r=localStorage.getItem(sKey());return r?JSON.parse(r):null}
+function navS(d){var n=cI+d;if(n<0||n>=secO.length)return;showSec(secO[n],document.querySelector('[data-section="'+secO[n]+'"]'))}
+function updN(){document.getElementById('bP').disabled=cI===0;document.getElementById('bN').disabled=cI===secO.length-1;document.getElementById('nLab').textContent=(cI+1)+' / '+secO.length}
+function toast(m){var t=document.getElementById('tst');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},3000)}
+function openM(id){document.getElementById(id).classList.add('show')}
+function closeM(id){document.getElementById(id).classList.remove('show')}
+function dC(id){if(CI[id]){CI[id].destroy();delete CI[id]}}
+function sk(){return sess?'ks_'+sess.mes+'_'+sess.ano+'_'+sess.oc+'_'+sess.oe:''}
+function fk(){return sk()+'_fotos'}
+function saveD(){if(!sess)return;localStorage.setItem(sk(),JSON.stringify({e:gE(),r:gR(),l:gL(),d:gD()}))}
+function loadD(){if(!sess)return null;var r=localStorage.getItem(sk());return r?JSON.parse(r):null}
 
-function gEst(){var d=[];document.querySelectorAll('#tEst tbody tr').forEach(function(r){var c=r.cells;d.push({d:c[0].textContent,t:c[1].textContent,e:c[2].textContent,p:c[3].textContent,q:parseFloat(c[4].textContent)||0,df:c[5].textContent,cm:c[6].textContent})});return d}
-function gRep(){var d=[];document.querySelectorAll('#tRep tbody tr').forEach(function(r){var c=r.cells;d.push({i:c[0].textContent,pr:c[1].textContent,o:c[2].textContent,g:c[3].textContent})});return d}
-function gLot(){var d=[];document.querySelectorAll('#tLot tbody tr').forEach(function(r){var c=r.cells;d.push({d:c[0].textContent,e:c[1].textContent,s:parseFloat(c[2].textContent)||0})});return d}
-function gDes(){
-    var ds=lOpts('despachador');var d=[];
-    document.querySelectorAll('#tDesp tbody tr').forEach(function(r){
-        var c=r.cells;var o={o:c[0].textContent};
-        ds.forEach(function(dp,i){o[dp.replace(/ /g,'_')]=parseFloat(c[1+i].textContent)||0});
-        o.total=parseFloat(c[1+ds.length].textContent)||0;d.push(o);
-    });return d;
-}
+function gE(){var d=[];document.querySelectorAll('#tE tbody tr').forEach(function(r){var c=r.cells;d.push({a:c[0].textContent,b:c[1].textContent,c:c[2].textContent,d:c[3].textContent,e:parseFloat(c[4].textContent)||0,f:c[5].textContent,g:c[6].textContent})});return d}
+function gR(){var d=[];document.querySelectorAll('#tR tbody tr').forEach(function(r){var c=r.cells;d.push({a:c[0].textContent,b:c[1].textContent,c:c[2].textContent,d:c[3].textContent})});return d}
+function gL(){var d=[];document.querySelectorAll('#tL tbody tr').forEach(function(r){var c=r.cells;d.push({a:c[0].textContent,b:c[1].textContent,c:parseFloat(c[2].textContent)||0})});return d}
+function gD(){var ds=lO('despachador');var d=[];document.querySelectorAll('#tD tbody tr').forEach(function(r){var c=r.cells;var o={a:c[0].textContent};ds.forEach(function(dp,i){o[dp]=parseFloat(c[1+i].textContent)||0});o.total=parseFloat(c[1+ds.length].textContent)||0;d.push(o)});return d}
 
-function saveSession(){
-    var oc=document.getElementById('cfgOC').value.trim(),oe=document.getElementById('cfgOE').value.trim(),m=document.getElementById('cfgMes').value,a=document.getElementById('cfgAno').value;
-    if(!oc||!oe||!m||!a){toast('Completa todos los campos');return}
-    sess={oc:oc,oe:oe,mes:m,ano:a};localStorage.setItem('kz_current',JSON.stringify(sess));
-    updSessUI();loadSess();toast('Sesion guardada');
+function saveSess(){
+    var o=document.getElementById('cfgOC').value.trim(),e=document.getElementById('cfgOE').value.trim(),m=document.getElementById('cfgMes').value,a=document.getElementById('cfgAno').value;
+    if(!o||!e||!m||!a){toast('Completa todos los campos');return}
+    sess={oc:o,oe:e,mes:m,ano:a};localStorage.setItem('kz_cur',JSON.stringify(sess));updUI();loadS();toast('Sesion guardada');
 }
-function loadSess(){
-    var d=loadAll();if(!d)return;
-    fillT('tEst',d.est||[],function(e){var df=e.df==='IGUAL'?'bg':'br';var cm=e.cm==='CON CAMBIO'?'bo':'bg';return '<td>'+e.d+'</td><td>'+e.t+'</td><td>'+e.e+'</td><td>'+e.p+'</td><td>'+e.q+'</td><td><span class="badge '+df+'">'+e.df+'</span></td><td><span class="badge '+cm+'">'+e.cm+'</span></td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
-    fillT('tRep',d.rep||[],function(e){var p=e.pr==='SI'?'br':'bg';return '<td>'+e.i+'</td><td><span class="badge '+p+'">'+e.pr+'</span></td><td>'+e.o+'</td><td>'+e.g+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
-    fillT('tLot',d.lot||[],function(e){var s=e.e==='COMPLETADO'?'bg':e.e==='EN CURSO'?'bo':'bb';return '<td>'+e.d+'</td><td><span class="badge '+s+'">'+e.e+'</span></td><td>'+e.s+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
-    var ds=lOpts('despachador');
-    fillT('tDesp',d.des||[],function(e){
-        var h='<td>'+e.o+'</td>';ds.forEach(function(dp){h+='<td>'+(e[dp.replace(/ /g,'_')]||0)+'</td>'});
-        h+='<td>'+(e.total||0)+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';return h;
-    });
-    renderFotosRecep();
+function loadS(){
+    var d=loadD();if(!d)return;
+    fT('tE',d.e||[],function(x){var f=x.f==='IGUAL'?'bg':'br';var g=x.g==='CON CAMBIO'?'bo2':'bg';return '<td>'+x.a+'</td><td>'+x.b+'</td><td>'+x.c+'</td><td>'+x.d+'</td><td>'+x.e+'</td><td><span class="badge '+f+'">'+x.f+'</span></td><td><span class="badge '+g+'">'+x.g+'</span></td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
+    fT('tR',d.r||[],function(x){var p=x.b==='SI'?'br':'bg';return '<td>'+x.a+'</td><td><span class="badge '+p+'">'+x.b+'</span></td><td>'+x.c+'</td><td>'+x.d+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
+    fT('tL',d.l||[],function(x){var s=x.b==='COMPLETADO'?'bg':x.b==='EN CURSO'?'bo2':'bb';return '<td>'+x.a+'</td><td><span class="badge '+s+'">'+x.b+'</span></td><td>'+x.c+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
+    var ds=lO('despachador');
+    fT('tD',d.d||[],function(x){var h='<td>'+x.a+'</td>';ds.forEach(function(dp){h+='<td>'+(x[dp]||0)+'</td>'});h+='<td>'+(x.total||0)+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';return h});
+    renderFRec();
 }
-function fillT(id,data,fn){var tb=document.querySelector('#'+id+' tbody');tb.innerHTML='';data.forEach(function(e){var tr=document.createElement('tr');tr.innerHTML=fn(e);tb.appendChild(tr)})}
-function delR(b){b.closest('tr').remove();saveAll();toast('Eliminado')}
-function updSessUI(){
-    if(!sess){document.getElementById('welcomeScreen').style.display='flex';document.getElementById('sidebarSessionInfo').textContent='Sin sesion activa';return}
-    document.getElementById('welcomeScreen').style.display='none';
-    document.getElementById('sidebarSessionInfo').innerHTML='OC: '+sess.oc+' | OE: '+sess.oe+'<br>'+sess.mes+' '+sess.ano;
+function fT(id,data,fn){var tb=document.querySelector('#'+id+' tbody');tb.innerHTML='';data.forEach(function(e){var tr=document.createElement('tr');tr.innerHTML=fn(e);tb.appendChild(tr)})}
+function delR(b){b.closest('tr').remove();saveD();toast('Eliminado')}
+function updUI(){
+    if(!sess){document.getElementById('welc').style.display='flex';document.getElementById('sInfo').textContent='Sin sesion activa';return}
+    document.getElementById('welc').style.display='none';document.getElementById('sInfo').innerHTML='OC: '+sess.oc+' | OE: '+sess.oe+'<br>'+sess.mes+' '+sess.ano;
     var b='<div class="session-badge"><i class="fas fa-clipboard-check"></i> '+sess.oc+'_'+sess.oe+'_'+sess.mes+'_'+sess.ano+'</div>';
-    ['badgeEstiba','badgeRecep','badgeLotes','badgeDesp','dashBadge'].forEach(function(x){var el=document.getElementById(x);if(el)el.innerHTML=b});
+    ['bEst','bRep','bLot','bDes','dBdg'].forEach(function(x){var el=document.getElementById(x);if(el)el.innerHTML=b});
 }
-function clearSession(){
+function clearSess(){
     if(!confirm('Eliminar todos los datos?'))return;
-    if(sess){localStorage.removeItem(sKey());localStorage.removeItem(fKey())}
-    sess=null;localStorage.removeItem('kz_current');
-    ['tEst','tRep','tLot','tDesp'].forEach(function(x){var tb=document.querySelector('#'+x+' tbody');if(tb)tb.innerHTML=''});
-    Object.keys(CI).forEach(function(k){dChart(k)});
-    pendFotos=[];renderPhotoGrid();
-    var fc=document.getElementById('fotosRecepcion');if(fc)fc.innerHTML='';
-    updSessUI();showSection('config',document.querySelector('[data-section="config"]'));toast('Sesion limpiada');
+    if(sess){localStorage.removeItem(sk());localStorage.removeItem(fk())}
+    sess=null;localStorage.removeItem('kz_cur');pF=[];renderPG();
+    ['tE','tR','tL','tD'].forEach(function(x){var tb=document.querySelector('#'+x+' tbody');if(tb)tb.innerHTML=''});
+    Object.keys(CI).forEach(function(k){dC(k)});var fc=document.getElementById('fRec');if(fc)fc.innerHTML='';
+    updUI();showSec('config',document.querySelector('[data-section="config"]'));toast('Sesion limpiada');
 }
 
 // ESTIBA
-function addEstiba(){
-    var d=document.getElementById('estDia').value,t=document.getElementById('estTipo').value,e=document.getElementById('estProd').value,p=document.getElementById('estPack').value,q=parseFloat(document.getElementById('estCant').value)||0;
-    if(!d||!t||!e){toast('Dia, Tipo y Producto son requeridos');return}
-    var df=e.toUpperCase()===p.toUpperCase()?'IGUAL':'DIFERENTE';var cm=df==='DIFERENTE'?'CON CAMBIO':'SIN CAMBIO';
-    var tr=document.createElement('tr');tr.innerHTML='<td>'+d+'</td><td>'+t+'</td><td>'+e+'</td><td>'+p+'</td><td>'+q+'</td><td><span class="badge '+(df==='IGUAL'?'bg':'br')+'">'+df+'</span></td><td><span class="badge '+(cm==='CON CAMBIO'?'bo':'bg')+'">'+cm+'</span></td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';
-    document.querySelector('#tEst tbody').appendChild(tr);clrEstiba();saveAll();toast('Estiba agregada');
+function addEst(){
+    var a=document.getElementById('eDia').value,b=document.getElementById('eTipo').value,c=document.getElementById('eProd').value,d=document.getElementById('ePack').value,e=parseFloat(document.getElementById('eCant').value)||0;
+    if(!a||!b||!c){toast('Dia, Tipo y Producto requeridos');return}
+    var f=c.toUpperCase()===d.toUpperCase()?'IGUAL':'DIFERENTE';var g=f==='DIFERENTE'?'CON CAMBIO':'SIN CAMBIO';
+    var tr=document.createElement('tr');tr.innerHTML='<td>'+a+'</td><td>'+b+'</td><td>'+c+'</td><td>'+d+'</td><td>'+e+'</td><td><span class="badge '+(f==='IGUAL'?'bg':'br')+'">'+f+'</span></td><td><span class="badge '+(g==='CON CAMBIO'?'bo2':'bg')+'">'+g+'</span></td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';
+    document.querySelector('#tE tbody').appendChild(tr);clrEst();saveD();if(cI===secO.indexOf('dashboard'))renderDash();toast('Estiba agregada');
 }
-function clrEstiba(){['estDia','estCant'].forEach(function(x){document.getElementById(x).value=''});document.getElementById('estTipo').value='';document.getElementById('estProd').value='';document.getElementById('estPack').value=''}
+function clrEst(){['eCant'].forEach(function(x){document.getElementById(x).value=''});document.getElementById('eDia').value='';document.getElementById('eTipo').value='';document.getElementById('eProd').value='';document.getElementById('ePack').value=''}
 
 // RECEPCION
-function addRecep(){
-    var i=document.getElementById('repProv').value,p=document.getElementById('repProb').value,o=document.getElementById('repOrd').value,g=document.getElementById('repGuia').value.trim();
-    if(!i||!o){toast('Proveedor y Orden requeridos');return}
-    var tr=document.createElement('tr');tr.innerHTML='<td>'+i+'</td><td><span class="badge '+(p==='SI'?'br':'bg')+'">'+p+'</span></td><td>'+o+'</td><td>'+g+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';
-    document.querySelector('#tRep tbody').appendChild(tr);clrRecep();saveAll();toast('Recepcion agregada');
+function addRep(){
+    var a=document.getElementById('rProv').value,b=document.getElementById('rProb').value,c=document.getElementById('rOrd').value,d=document.getElementById('rGuia').value.trim();
+    if(!a||!c){toast('Proveedor y Orden requeridos');return}
+    var tr=document.createElement('tr');tr.innerHTML='<td>'+a+'</td><td><span class="badge '+(b==='SI'?'br':'bg')+'">'+b+'</span></td><td>'+c+'</td><td>'+d+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';
+    document.querySelector('#tR tbody').appendChild(tr);clrRep();saveD();if(cI===secO.indexOf('dashboard'))renderDash();toast('Recepcion agregada');
 }
-function clrRecep(){document.getElementById('repProv').value='';document.getElementById('repOrd').value='';document.getElementById('repGuia').value=''}
+function clrRep(){document.getElementById('rProv').value='';document.getElementById('rOrd').value='';document.getElementById('rGuia').value=''}
 
 // FOTOS
-function handlePhotos(ev){
-    var files=ev.target.files;
-    for(var i=0;i<files.length;i++){(function(f){var r=new FileReader();r.onload=function(e){pendFotos.push({data:e.target.result,name:f.name,ts:Date.now()});renderPhotoGrid()};r.readAsDataURL(f)})(files[i])}
-    ev.target.value='';
-}
-function renderPhotoGrid(){
-    var g=document.getElementById('photoGrid');g.innerHTML='';
-    if(!pendFotos.length){g.innerHTML='<div style="text-align:center;color:var(--t2);font-size:12px;padding:10px">Sube fotos y luego guarda con la guia</div>';return}
-    pendFotos.forEach(function(p,i){var c=document.createElement('div');c.className='photo-card';c.innerHTML='<img src="'+p.data+'" alt="'+p.name+'"><div class="ph-info"><span class="ph-del" onclick="pendFotos.splice('+i+',1);renderPhotoGrid()"><i class="fas fa-trash"></i></span><strong>'+p.name+'</strong></div>';g.appendChild(c)});
-}
-function savePhotos(){
-    var guia=document.getElementById('fotoGuia').value.trim();var desc=document.getElementById('fotoDesc').value.trim();
-    if(!guia){toast('Ingresa el numero de guia');return}
-    if(!pendFotos.length){toast('Sube al menos una foto');return}
-    var all=gAllFotos();pendFotos.forEach(function(p){all.push({data:p.data,name:p.name,guia:guia,desc:desc,ts:p.ts||Date.now()})});
-    sAllFotos(all);pendFotos=[];renderPhotoGrid();document.getElementById('fotoGuia').value='';document.getElementById('fotoDesc').value='';
-    renderFotosRecep();toast('Fotos guardadas para guia: '+guia);
-}
-function gAllFotos(){if(!sess)return[];try{return JSON.parse(localStorage.getItem(fKey()))||[]}catch(e){return[]}}
-function sAllFotos(f){if(!sess)return;localStorage.setItem(fKey(),JSON.stringify(f))}
-function rmFoto(i){var f=gAllFotos();f.splice(i,1);sAllFotos(f);renderFotosRecep();toast('Foto eliminada')}
-function renderFotosRecep(){
-    var el=document.getElementById('fotosRecepcion');if(!el)return;
-    var all=gAllFotos();if(!all.length){el.innerHTML='';return}
-    var html='<div class="form-card"><h3><i class="fas fa-camera"></i> Fotos Registradas por Guia</h3>';
-    var pg={};all.forEach(function(f,i){if(!pg[f.guia])pg[f.guia]={desc:f.desc,f:[]};pg[f.guia].f.push({d:f.data,n:f.name,i:i})});
-    Object.keys(pg).sort().forEach(function(g){
-        html+='<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:700;margin-bottom:8px"><i class="fas fa-truck" style="color:var(--bl)"></i> Guia: '+g+(pg[g].desc?' - '+pg[g].desc:'')+'</div><div class="photo-grid">';
-        pg[g].f.forEach(function(p){html+='<div class="photo-card"><img src="'+p.d+'" alt="'+p.n+'"><div class="ph-info"><span class="ph-del" onclick="rmFoto('+p.i+')"><i class="fas fa-trash"></i></span><strong>'+p.n+'</strong></div></div>'});
-        html+='</div></div>';
-    });
-    el.innerHTML=html+'</div>';
+function handleF(ev){var fs=ev.target.files;for(var i=0;i<fs.length;i++){(function(f){var r=new FileReader();r.onload=function(e){pF.push({data:e.target.result,name:f.name,ts:Date.now()});renderPG()};r.readAsDataURL(f)})(fs[i])}ev.target.value=''}
+function renderPG(){var g=document.getElementById('pGrid');g.innerHTML='';if(!pF.length){g.innerHTML='<div style="text-align:center;color:var(--t2);font-size:12px;padding:10px">Sube fotos y guarda con guia</div>';return}pF.forEach(function(p,i){var c=document.createElement('div');c.className='photo-card';c.innerHTML='<img src="'+p.data+'"><div class="pi"><span class="pd" onclick="pF.splice('+i+',1);renderPG()"><i class="fas fa-trash"></i></span><strong>'+p.name+'</strong></div>';g.appendChild(c)})}
+function saveF(){var gu=document.getElementById('fGuia').value.trim();var de=document.getElementById('fDesc').value.trim();if(!gu){toast('Guia requerida');return}if(!pF.length){toast('Sube fotos');return}var all=gAF();pF.forEach(function(p){all.push({data:p.data,name:p.name,guia:gu,desc:de,ts:p.ts})});sAF(all);pF=[];renderPG();document.getElementById('fGuia').value='';document.getElementById('fDesc').value='';renderFRec();toast('Fotos guardadas: '+gu)}
+function gAF(){if(!sess)return[];try{return JSON.parse(localStorage.getItem(fk()))||[]}catch(e){return[]}}
+function sAF(f){if(!sess)return;localStorage.setItem(fk(),JSON.stringify(f))}
+function rmF(i){var f=gAF();f.splice(i,1);sAF(f);renderFRec();toast('Foto eliminada')}
+function renderFRec(){var el=document.getElementById('fRec');if(!el)return;var all=gAF();if(!all.length){el.innerHTML='';return}
+    var h='<div class="form-card"><h3><i class="fas fa-camera"></i> Fotos por Guia</h3>';var pg={};all.forEach(function(f,i){if(!pg[f.guia])pg[f.guia]={d:f.desc,f:[]};pg[f.guia].f.push({a:f.data,b:f.name,i:i})});
+    Object.keys(pg).sort().forEach(function(g){h+='<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:700;margin-bottom:8px"><i class="fas fa-truck" style="color:var(--bl)"></i> Guia: '+g+(pg[g].d?' - '+pg[g].d:'')+'</div><div class="photo-grid">';pg[g].f.forEach(function(p){h+='<div class="photo-card"><img src="'+p.a+'"><div class="pi"><span class="pd" onclick="rmF('+p.i+')"><i class="fas fa-trash"></i></span><strong>'+p.b+'</strong></div></div>'});h+='</div></div>'});el.innerHTML=h+'</div>';
 }
 
 // LOTES
-function addLote(){
-    var d=document.getElementById('lotDia').value,e=document.getElementById('lotEst').value,s=parseFloat(document.getElementById('lotEsc').value)||0;
-    if(!d){toast('Dia requerido');return}
-    var sc=e==='COMPLETADO'?'bg':e==='EN CURSO'?'bo':'bb';
-    var tr=document.createElement('tr');tr.innerHTML='<td>'+d+'</td><td><span class="badge '+sc+'">'+e+'</span></td><td>'+s+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';
-    document.querySelector('#tLot tbody').appendChild(tr);clrLote();saveAll();toast('Lote agregado');
-}
-function clrLote(){document.getElementById('lotDia').value='';document.getElementById('lotEsc').value=''}
+function addLot(){var a=document.getElementById('lDia').value,b=document.getElementById('lEst').value,c=parseFloat(document.getElementById('lEsc').value)||0;if(!a){toast('Dia requerido');return}var sc=b==='COMPLETADO'?'bg':b==='EN CURSO'?'bo2':'bb';var tr=document.createElement('tr');tr.innerHTML='<td>'+a+'</td><td><span class="badge '+sc+'">'+b+'</span></td><td>'+c+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';document.querySelector('#tL tbody').appendChild(tr);clrLot();saveD();if(cI===secO.indexOf('dashboard'))renderDash();toast('Lote agregado')}
+function clrLot(){document.getElementById('lDia').value='';document.getElementById('lEsc').value=''}
 
-// DESPACHADORES DINAMICOS
-function buildDespHead(){
-    var h=document.getElementById('tDespH');var ds=lOpts('despachador');var html='<tr><th>Orden</th>';
-    ds.forEach(function(d){html+='<th>'+d+'</th>'});html+='<th>Total</th><th></th></tr>';h.innerHTML=html;
-}
-function buildDespFields(){
-    var c=document.getElementById('despCampos');var ds=lOpts('despachador');var html='';
-    ds.forEach(function(d){html+='<div class="form-group"><label>'+d+'</label><input type="number" id="d_'+d.replace(/ /g,'_')+'" min="0" placeholder="0"></div>'});
-    c.innerHTML=html;
-}
-function popDespFilter(){
-    var s=document.getElementById('filterPersonaDesp');if(!s)return;var cv=s.value;
-    s.innerHTML='<option value="todos">Todos</option>';
-    lOpts('despachador').forEach(function(d){var o=document.createElement('option');o.value=d.replace(/ /g,'_');o.textContent=d;s.appendChild(o)});
-    if(cv)s.value=cv;
-}
-function addDesp(){
-    var o=document.getElementById('despOrd').value;if(!o){toast('Orden requerida');return}
-    var ds=lOpts('despachador');var total=0;var h='<td>'+o+'</td>';
-    ds.forEach(function(d){var v=parseFloat(document.getElementById('d_'+d.replace(/ /g,'_')).value)||0;total+=v;h+='<td>'+v+'</td>'});
-    h+='<td>'+total+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';
-    var tr=document.createElement('tr');tr.innerHTML=h;document.querySelector('#tDesp tbody').appendChild(tr);
-    clrDesp();saveAll();toast('Despachador agregado');
-}
-function clrDesp(){document.getElementById('despOrd').value='';lOpts('despachador').forEach(function(d){var e=document.getElementById('d_'+d.replace(/ /g,'_'));if(e)e.value=''})}
-
-// FILTROS
-function popFilter(id,key){var s=document.getElementById(id);if(!s)return;var cv=s.value;s.innerHTML='<option value="'+(id==='fDia'?'todos':'todas')+'">'+(id==='fDia'?'Todos':'Todas')+'</option>';lOpts(key).forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o)});s.value=cv}
+// DESPACHADORES
+function buildDH(){var h=document.getElementById('tDH');var ds=lO('despachador');var html='<tr><th>Orden</th>';ds.forEach(function(d){html+='<th>'+d+'</th>'});html+='<th>Total</th><th></th></tr>';h.innerHTML=html}
+function buildDF(){var c=document.getElementById('dFields');var ds=lO('despachador');var html='';ds.forEach(function(d){html+='<div class="fg"><label>'+d+'</label><input type="number" id="df_'+d.replace(/ /g,'_')+'" min="0" placeholder="0"></div>'});c.innerHTML=html}
+function popDF(){var s=document.getElementById('filterPersonaDesp');if(!s)return;var cv=s.value;s.innerHTML='<option value="todos">Todos</option>';lO('despachador').forEach(function(d){var o=document.createElement('option');o.value=d.replace(/ /g,'_');o.textContent=d;s.appendChild(o)});s.value=cv}
+function addDes(){var o=document.getElementById('dOrd').value;if(!o){toast('Orden requerida');return}var ds=lO('despachador');var tot=0;var h='<td>'+o+'</td>';ds.forEach(function(d){var v=parseFloat(document.getElementById('df_'+d.replace(/ /g,'_')).value)||0;tot+=v;h+='<td>'+v+'</td>'});h+='<td>'+tot+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>';var tr=document.createElement('tr');tr.innerHTML=h;document.querySelector('#tD tbody').appendChild(tr);clrDes();saveD();if(cI===secO.indexOf('dashboard'))renderDash();toast('Despachador agregado')}
+function clrDes(){document.getElementById('dOrd').value='';lO('despachador').forEach(function(d){var e=document.getElementById('df_'+d.replace(/ /g,'_'));if(e)e.value=''})}
 
 // DASHBOARD
 function renderDash(){
-    var est=gEst||[];var rep=gRep||[];var lot=gLot||[];var des=gDes||[];
-    // try to get from tables if session
-    var estData=[];document.querySelectorAll('#tEst tbody tr').forEach(function(r){var c=r.cells;estData.push({d:c[0].textContent,t:c[1].textContent,e:c[2].textContent,p:c[3].textContent,q:parseFloat(c[4].textContent)||0,df:c[5].textContent,cm:c[6].textContent})});
-    var repData=[];document.querySelectorAll('#tRep tbody tr').forEach(function(r){var c=r.cells;repData.push({i:c[0].textContent,pr:c[1].textContent,o:c[2].textContent,g:c[3].textContent})});
-    var lotData=[];document.querySelectorAll('#tLot tbody tr').forEach(function(r){var c=r.cells;lotData.push({d:c[0].textContent,e:c[1].textContent,s:parseFloat(c[2].textContent)||0})});
-    var desData=[];var ds=lOpts('despachador');document.querySelectorAll('#tDesp tbody tr').forEach(function(r){var c=r.cells;var obj={o:c[0].textContent};ds.forEach(function(dp,i){obj[dp.replace(/ /g,'_')]=parseFloat(c[1+i].textContent)||0});obj.total=parseFloat(c[1+ds.length].textContent)||0;desData.push(obj)});
+    var est=[],rep=[],lot=[],des=[];var ds=lO('despachador');
+    document.querySelectorAll('#tE tbody tr').forEach(function(r){var c=r.cells;est.push({a:c[0].textContent,b:c[1].textContent,c:c[2].textContent,d:c[3].textContent,e:parseFloat(c[4].textContent)||0,f:c[5].textContent,g:c[6].textContent})});
+    document.querySelectorAll('#tR tbody tr').forEach(function(r){var c=r.cells;rep.push({a:c[0].textContent,b:c[1].textContent,c:c[2].textContent,d:c[3].textContent})});
+    document.querySelectorAll('#tL tbody tr').forEach(function(r){var c=r.cells;lot.push({a:c[0].textContent,b:c[1].textContent,c:parseFloat(c[2].textContent)||0})});
+    document.querySelectorAll('#tD tbody tr').forEach(function(r){var c=r.cells;var o={a:c[0].textContent};ds.forEach(function(dp,i){o[dp]=parseFloat(c[1+i].textContent)||0});o.total=parseFloat(c[1+ds.length].textContent)||0;des.push(o)});
 
-    // KPIs
-    var maxD={};estData.forEach(function(e){if(!maxD[e.d]||e.q>maxD[e.d])maxD[e.d]=e.q});var tot=0;for(var x in maxD)tot+=maxD[x];
-    document.getElementById('kpiTotal').textContent=tot;
-    document.getElementById('kpiDif').textContent=estData.filter(function(e){return e.df==='DIFERENTE'}).length;
-    document.getElementById('kpiProb').textContent=repData.filter(function(r){return r.pr==='SI'}).length;
-    document.getElementById('kpiErr').textContent=desData.reduce(function(s,d){return s+d.total},0);
+    var mx={};est.forEach(function(e){if(!mx[e.a]||e.e>mx[e.a])mx[e.a]=e.e});var tt=0;for(var x in mx)tt+=mx[x];
+    document.getElementById('k1').textContent=tt;document.getElementById('k2').textContent=est.filter(function(e){return e.f==='DIFERENTE'}).length;
+    document.getElementById('k3').textContent=rep.filter(function(r){return r.b==='SI'}).length;document.getElementById('k4').textContent=des.reduce(function(s,d){return s+d.total},0);
 
-    // Estiba charts
-    var ig=estData.filter(function(e){return e.df==='IGUAL'}).length;var di=estData.filter(function(e){return e.df==='DIFERENTE'}).length;
-    dChart('cEstiba');CI['cEstiba']=new Chart(document.getElementById('cEstiba'),{type:'doughnut',data:{labels:['IGUAL','DIFERENTE'],datasets:[{data:[ig,di],backgroundColor:['#16a34a','#dc2626'],borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:12,family:'Inter',weight:'600'},padding:16}},tooltip:tTip,datalabels:dlP},cutout:'55%'}});
+    var ig=est.filter(function(e){return e.f==='IGUAL'}).length;var di=est.filter(function(e){return e.f==='DIFERENTE'}).length;
+    dC('cE1');CI['cE1']=new Chart(document.getElementById('cE1'),{type:'doughnut',data:{labels:['IGUAL','DIFERENTE'],datasets:[{data:[ig,di],backgroundColor:['#16a34a','#dc2626'],borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:12,family:'Inter',weight:'600'},padding:16}},tooltip:tS,datalabels:dP},cutout:'55%'}});
 
-    var tipos={};estData.forEach(function(e){tipos[e.t]=(tipos[e.t]||0)+1});
-    dChart('cTipo');CI['cTipo']=new Chart(document.getElementById('cTipo'),{type:'bar',data:{labels:Object.keys(tipos),datasets:[{label:'Productos',data:Object.values(tipos),backgroundColor:['#2563eb','#16a34a','#ea580c','#dc2626','#7c3aed','#0891b2','#ec4899'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true},y:{ticks:{color:'#000',font:{size:11,weight:'600'}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:tTip,datalabels:dlL}}});
+    var tipos={};est.forEach(function(e){tipos[e.b]=(tipos[e.b]||0)+1});
+    dC('cE2');CI['cE2']=new Chart(document.getElementById('cE2'),{type:'bar',data:{labels:Object.keys(tipos),datasets:[{label:'Productos',data:Object.values(tipos),backgroundColor:['#2563eb','#16a34a','#ea580c','#dc2626','#7c3aed','#0891b2','#ec4899'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true},y:{ticks:{color:'#000',font:{size:11,weight:'600'}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:tS,datalabels:dL}}});
 
-    var td={};estData.filter(function(e){return e.df==='DIFERENTE'}).forEach(function(e){td[e.t]=(td[e.t]||0)+1});
-    dChart('cDiffTipo');CI['cDiffTipo']=new Chart(document.getElementById('cDiffTipo'),{type:'bar',data:{labels:Object.keys(td).length?Object.keys(td):['Sin diferencias'],datasets:[{label:'Diferencias',data:Object.keys(td).length?Object.values(td):[0],backgroundColor:'#dc2626',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:10,weight:'600'},maxRotation:45},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tTip,datalabels:dlL}}});
+    var td={};est.filter(function(e){return e.f==='DIFERENTE'}).forEach(function(e){td[e.b]=(td[e.b]||0)+1});
+    dC('cE3');CI['cE3']=new Chart(document.getElementById('cE3'),{type:'bar',data:{labels:Object.keys(td).length?Object.keys(td):['Sin diferencias'],datasets:[{data:Object.keys(td).length?Object.values(td):[0],backgroundColor:'#dc2626',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:10},maxRotation:45},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tS,datalabels:dL}}});
 
-    var dias=[];estData.forEach(function(e){if(dias.indexOf(e.d)===-1)dias.push(e.d)});dias.sort(function(a,b){return Number(a)-Number(b)});
-    dChart('cDiffDia');CI['cDiffDia']=new Chart(document.getElementById('cDiffDia'),{type:'bar',data:{labels:dias.map(function(d){return 'Dia '+d}),datasets:[{label:'Diferencias',data:dias.map(function(d){return estData.filter(function(e){return e.d===d&&e.df==='DIFERENTE'}).length}),backgroundColor:'#ea580c',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:11,weight:'600'}},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tTip,datalabels:dlL}}});
+    var dias=[];est.forEach(function(e){if(dias.indexOf(e.a)===-1)dias.push(e.a)});
+    dC('cE4');CI['cE4']=new Chart(document.getElementById('cE4'),{type:'bar',data:{labels:dias.map(function(d){return d}),datasets:[{label:'Diferencias',data:dias.map(function(d){return est.filter(function(e){return e.a===d&&e.f==='DIFERENTE'}).length}),backgroundColor:'#ea580c',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000'},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tS,datalabels:dL}}});
 
-    // Recepcion
-    var prob=repData.filter(function(r){return r.pr==='SI'});
-    var pi={};prob.forEach(function(r){pi[r.i]=(pi[r.i]||0)+1});var il=Object.keys(pi).sort(function(a,b){return pi[b]-pi[a]});
-    dChart('cProveedor');CI['cProveedor']=new Chart(document.getElementById('cProveedor'),{type:'bar',data:{labels:il.length?il:['Sin datos'],datasets:[{label:'Problemas',data:il.length?il.map(function(l){return pi[l]}):[0],backgroundColor:['#dc2626','#ea580c','#2563eb','#7c3aed','#16a34a','#0891b2'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true},y:{ticks:{color:'#000',font:{size:12,weight:'600'}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:tTip,datalabels:dlL}}});
+    var prob=rep.filter(function(r){return r.b==='SI'});var pi={};prob.forEach(function(r){pi[r.a]=(pi[r.a]||0)+1});var il=Object.keys(pi).sort(function(a,b){return pi[b]-pi[a]});
+    dC('cR1');CI['cR1']=new Chart(document.getElementById('cR1'),{type:'bar',data:{labels:il.length?il:['Sin datos'],datasets:[{data:il.length?il.map(function(l){return pi[l]}):[0],backgroundColor:['#dc2626','#ea580c','#2563eb','#7c3aed','#16a34a','#0891b2'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true},y:{ticks:{color:'#000',font:{size:12,weight:'600'}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:tS,datalabels:dL}}});
 
-    var po={};prob.forEach(function(r){po[r.o]=(po[r.o]||0)+1});var ol=Object.keys(po).sort();
-    dChart('cOrdRecep');CI['cOrdRecep']=new Chart(document.getElementById('cOrdRecep'),{type:'bar',data:{labels:ol.length?ol:['Sin datos'],datasets:[{label:'Problemas',data:ol.length?ol.map(function(l){return po[l]}):[0],backgroundColor:'#ea580c',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:9,weight:'600'},maxRotation:65},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tTip,datalabels:dlL}}});
+    var po={};prob.forEach(function(r){po[r.c]=(po[r.c]||0)+1});var ol=Object.keys(po).sort();
+    dC('cR2');CI['cR2']=new Chart(document.getElementById('cR2'),{type:'bar',data:{labels:ol.length?ol:['Sin datos'],datasets:[{data:ol.length?ol.map(function(l){return po[l]}):[0],backgroundColor:'#ea580c',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:9},maxRotation:65},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tS,datalabels:dL}}});
 
-    // Lotes
-    var lDias=[];lotData.forEach(function(l){if(lDias.indexOf(l.d)===-1)lDias.push(l.d)});lDias.sort(function(a,b){return Number(a)-Number(b)});
-    var comp=lDias.map(function(d){return lotData.filter(function(l){return l.d===d&&l.e==='COMPLETADO'}).length});
-    var enC=lDias.map(function(d){return lotData.filter(function(l){return l.d===d&&l.e==='EN CURSO'}).length});
-    var prox=lDias.map(function(d){return lotData.filter(function(l){return l.d===d&&l.e==='PROXIMO'}).length});
-    dChart('cLotes');CI['cLotes']=new Chart(document.getElementById('cLotes'),{type:'bar',data:{labels:lDias.map(function(d){return 'Dia '+d}),datasets:[{label:'COMPLETADO',data:comp,backgroundColor:'#16a34a',borderRadius:4},{label:'EN CURSO',data:enC,backgroundColor:'#ea580c',borderRadius:4},{label:'PROXIMO',data:prox,backgroundColor:'#2563eb',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,ticks:{color:'#000',font:{size:11,weight:'600'}},grid:{display:false}},y:{stacked:true,ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:16}},tooltip:tTip,datalabels:{display:false}}}});
+    var lD=[];lot.forEach(function(l){if(lD.indexOf(l.a)===-1)lD.push(l.a)});lD.sort(function(a,b){return a.localeCompare(b)});
+    var comp=lD.map(function(d){return lot.filter(function(l){return l.a===d&&l.b==='COMPLETADO'}).length});
+    var enC=lD.map(function(d){return lot.filter(function(l){return l.a===d&&l.b==='EN CURSO'}).length});
+    var prox=lD.map(function(d){return lot.filter(function(l){return l.a===d&&l.b==='PROXIMO'}).length});
+    dC('cL1');CI['cL1']=new Chart(document.getElementById('cL1'),{type:'bar',data:{labels:lD,datasets:[{label:'COMPLETADO',data:comp,backgroundColor:'#16a34a',borderRadius:4},{label:'EN CURSO',data:enC,backgroundColor:'#ea580c',borderRadius:4},{label:'PROXIMO',data:prox,backgroundColor:'#2563eb',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,ticks:{color:'#000'},grid:{display:false}},y:{stacked:true,ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:16}},tooltip:tS,datalabels:{display:false}}}});
 
     var tc=comp.reduce(function(a,b){return a+b},0),te=enC.reduce(function(a,b){return a+b},0),tp=prox.reduce(function(a,b){return a+b},0);
-    dChart('cLotesPie');CI['cLotesPie']=new Chart(document.getElementById('cLotesPie'),{type:'doughnut',data:{labels:['COMPLETADO','EN CURSO','PROXIMO'],datasets:[{data:[tc,te,tp],backgroundColor:['#16a34a','#ea580c','#2563eb'],borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:14}},tooltip:tTip,datalabels:dlP},cutout:'55%'}});
+    dC('cL2');CI['cL2']=new Chart(document.getElementById('cL2'),{type:'doughnut',data:{labels:['COMPLETADO','EN CURSO','PROXIMO'],datasets:[{data:[tc,te,tp],backgroundColor:['#16a34a','#ea580c','#2563eb'],borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:14}},tooltip:tS,datalabels:dP},cutout:'55%'}});
 
-    var esc=lDias.map(function(d){var e=lotData.find(function(l){return l.d===d});return e?e.s:0});
-    dChart('cEscuelas');CI['cEscuelas']=new Chart(document.getElementById('cEscuelas'),{type:'bar',data:{labels:lDias.map(function(d){return 'Dia '+d}),datasets:[{label:'Escuelas',data:esc,backgroundColor:'#0891b2',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:10,weight:'600'}},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tTip,datalabels:dlL}}});
+    var esc=lD.map(function(d){var e=lot.find(function(l){return l.a===d});return e?e.c:0});
+    dC('cL3');CI['cL3']=new Chart(document.getElementById('cL3'),{type:'bar',data:{labels:lD,datasets:[{label:'Escuelas',data:esc,backgroundColor:'#0891b2',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000'},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{display:false},tooltip:tS,datalabels:dL}}});
 
-    // Despachadores
-    var colors=['#2563eb','#ea580c','#16a34a','#dc2626','#7c3aed','#0891b2','#ec4899','#f59e0b'];
-    var dSets=[];ds.forEach(function(d,i){dSets.push({label:d,data:desData.map(function(dd){return dd[d.replace(/ /g,'_')]||0}),backgroundColor:colors[i%colors.length],borderRadius:4})});
-    var dLabels=desData.map(function(dd){return dd.o});
-    dChart('cDesp');CI['cDesp']=new Chart(document.getElementById('cDesp'),{type:'bar',data:{labels:dLabels,datasets:dSets},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:9,weight:'600'},maxRotation:65},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:16}},tooltip:tTip,datalabels:dlL}}});
+    var cols=['#2563eb','#ea580c','#16a34a','#dc2626','#7c3aed','#0891b2','#ec4899','#f59e0b'];
+    var dSets=[];ds.forEach(function(d,i){dSets.push({label:d,data:des.map(function(dd){return dd[d]||0}),backgroundColor:cols[i%cols.length],borderRadius:4})});
+    dC('cD1');CI['cD1']=new Chart(document.getElementById('cD1'),{type:'bar',data:{labels:des.map(function(dd){return dd.a}),datasets:dSets},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#000',font:{size:9},maxRotation:65},grid:{display:false}},y:{ticks:{color:'#000',font:{size:12,weight:'700'}},grid:{color:'rgba(0,0,0,.06)'},beginAtZero:true}},plugins:{legend:{labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:16}},tooltip:tS,datalabels:dL}}});
 
-    var pL=[],pD=[],pC=[];ds.forEach(function(d,i){var tot=desData.reduce(function(s,dd){return s+(dd[d.replace(/ /g,'_')]||0)},0);pL.push(d);pD.push(tot);pC.push(colors[i%colors.length])});
-    dChart('cDespPie');CI['cDespPie']=new Chart(document.getElementById('cDespPie'),{type:'doughnut',data:{labels:pL,datasets:[{data:pD,backgroundColor:pC,borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:14}},tooltip:tTip,datalabels:dlP},cutout:'55%'}});
-
-    // Filtros para charts
-    popFilter('fDia','tipo');
+    var pL=[],pD=[],pC=[];ds.forEach(function(d,i){var t=des.reduce(function(s,dd){return s+(dd[d]||0)},0);pL.push(d);pD.push(t);pC.push(cols[i%cols.length])});
+    dC('cD2');CI['cD2']=new Chart(document.getElementById('cD2'),{type:'doughnut',data:{labels:pL,datasets:[{data:pD,backgroundColor:pC,borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#111827',font:{size:11,family:'Inter',weight:'600'},padding:14}},tooltip:tS,datalabels:dP},cutout:'55%'}});
 }
 
 // IMPORT
-function importExcel(ev){
-    var f=ev.target.files[0];if(!f)return;
-    document.getElementById('loadingOverlay').classList.add('show');
+function doImport(ev){
+    var f=ev.target.files[0];if(!f)return;document.getElementById('ld').classList.add('show');
     var r=new FileReader();r.onload=function(e){
-        try{
-            var data=new Uint8Array(e.target.result);var wb=XLSX.read(data,{type:'array',cellDates:true});var ws=wb.Sheets['BBDD'];
-            if(ws){
-                var bbdd=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});var est=[],rep=[],lot=[],des=[];
-                for(var i=1;i<bbdd.length;i++){
-                    var rw=bbdd[i];
-                    if(rw[0]!==undefined&&rw[0]!==''&&rw[2]){var df=String(rw[4]||'').trim().toUpperCase()||'IGUAL';var cm=String(rw[7]||'').trim().toUpperCase()||'SIN CAMBIO';est.push({d:String(rw[0]).trim(),t:String(rw[1]||'').trim(),e:String(rw[2]||'').trim(),p:String(rw[3]||'').trim(),q:parseFloat(rw[5])||0,df:df,cm:cm})}
-                    if(rw[12])rep.push({i:String(rw[12]||'').trim(),pr:String(rw[13]||'').trim(),o:String(rw[14]||'').trim(),g:String(rw[16]||'').trim()});
-                    if(rw[18]!==undefined&&rw[18]!==''&&rw[19])lot.push({d:String(rw[18]).trim(),e:String(rw[19]||'').trim().toUpperCase(),s:parseFloat(rw[20])||0});
-                    if(rw[22]){var tt=(parseFloat(rw[23])||0)+(parseFloat(rw[24])||0)+(parseFloat(rw[25])||0);des.push({o:String(rw[22]||'').trim(),c:parseFloat(rw[23])||0,j:parseFloat(rw[24])||0,s2:parseFloat(rw[25])||0,total:tt})}
-                }
-                // Auto-add options from imported data
-                var ao={};est.forEach(function(e){if(e.t){if(!ao.tipo)ao.tipo={};ao.tipo[e.t]=1}if(e.e){if(!ao.producto)ao.producto={};ao.producto[e.e]=1}});
-                rep.forEach(function(e){if(e.i){if(!ao.industria)ao.industria={};ao.industria[e.i]=1}if(e.o){if(!ao.orden)ao.orden={};ao.orden[e.o]=1}});
-                des.forEach(function(e){if(e.o){if(!ao.orden)ao.orden={};ao.orden[e.o]=1}});
-                Object.keys(ao).forEach(function(k){var ex=lOpts(k);Object.keys(ao[k]).forEach(function(v){if(ex.indexOf(v)===-1)ex.push(v)});ex.sort();sOpts(k,ex)});
-
-                fillT('tEst',est,function(e2){var df2=e2.df==='IGUAL'?'bg':'br';var cm2=e2.cm==='CON CAMBIO'?'bo':'bg';return '<td>'+e2.d+'</td><td>'+e2.t+'</td><td>'+e2.e+'</td><td>'+e2.p+'</td><td>'+e2.q+'</td><td><span class="badge '+df2+'">'+e2.df+'</span></td><td><span class="badge '+cm2+'">'+e2.cm+'</span></td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
-                fillT('tRep',rep,function(e2){var p2=e2.pr==='SI'?'br':'bg';return '<td>'+e2.i+'</td><td><span class="badge '+p2+'">'+e2.pr+'</span></td><td>'+e2.o+'</td><td>'+e2.g+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
-                fillT('tLot',lot,function(e2){var s2=e2.e==='COMPLETADO'?'bg':e2.e==='EN CURSO'?'bo':'bb';return '<td>'+e2.d+'</td><td><span class="badge '+s2+'">'+e2.e+'</span></td><td>'+e2.s+'</td><td><button class="btn btn-d btn-sm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
-            }
-            saveAll();popAll();renderChips();
-            closeModal('modalImport');document.getElementById('loadingOverlay').classList.remove('show');
-            showSection('dashboard',document.querySelector('[data-section="dashboard"]'));toast('Excel importado');
-        }catch(er){console.error(er);document.getElementById('loadingOverlay').classList.remove('show');toast('Error al importar')}
+        try{var data=new Uint8Array(e.target.result);var wb=XLSX.read(data,{type:'array',cellDates:true});var ws=wb.Sheets['BBDD'];
+        if(ws){var bb=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});var est=[],rep=[],lot=[],des=[];
+        for(var i=1;i<bb.length;i++){var rw=bb[i];
+            if(rw[0]!==undefined&&rw[0]!==''&&rw[2]){var f2=String(rw[4]||'').trim().toUpperCase()||'IGUAL';var g2=String(rw[7]||'').trim().toUpperCase()||'SIN CAMBIO';est.push({a:String(rw[0]).trim(),b:String(rw[1]||'').trim(),c:String(rw[2]||'').trim(),d:String(rw[3]||'').trim(),e:parseFloat(rw[5])||0,f:f2,g:g2})}
+            if(rw[12])rep.push({a:String(rw[12]||'').trim(),b:String(rw[13]||'').trim(),c:String(rw[14]||'').trim(),d:String(rw[16]||'').trim()});
+            if(rw[18]!==undefined&&rw[18]!==''&&rw[19])lot.push({a:String(rw[18]).trim(),b:String(rw[19]||'').trim().toUpperCase(),c:parseFloat(rw[20])||0});
+            if(rw[22]){var tt=(parseFloat(rw[23])||0)+(parseFloat(rw[24])||0)+(parseFloat(rw[25])||0);des.push({a:String(rw[22]||'').trim(),total:tt})}}
+        var ao={};est.forEach(function(e){if(e.b){if(!ao.tipo)ao.tipo={};ao.tipo[e.b]=1}if(e.c){if(!ao.producto)ao.producto={};ao.producto[e.c]=1}});
+        rep.forEach(function(e){if(e.a){if(!ao.industria)ao.industria={};ao.industria[e.a]=1}if(e.c){if(!ao.orden)ao.orden={};ao.orden[e.c]=1}});
+        Object.keys(ao).forEach(function(k){var ex=lO(k);Object.keys(ao[k]).forEach(function(v){if(ex.indexOf(v)===-1)ex.push(v)});ex.sort();sO(k,ex)});
+        fT('tE',est,function(x){var f2=x.f==='IGUAL'?'bg':'br';var g2=x.g==='CON CAMBIO'?'bo2':'bg';return '<td>'+x.a+'</td><td>'+x.b+'</td><td>'+x.c+'</td><td>'+x.d+'</td><td>'+x.e+'</td><td><span class="badge '+f2+'">'+x.f+'</span></td><td><span class="badge '+g2+'">'+x.g+'</span></td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
+        fT('tR',rep,function(x){var p=x.b==='SI'?'br':'bg';return '<td>'+x.a+'</td><td><span class="badge '+p+'">'+x.b+'</span></td><td>'+x.c+'</td><td>'+x.d+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'});
+        fT('tL',lot,function(x){var s=x.b==='COMPLETADO'?'bg':x.b==='EN CURSO'?'bo2':'bb';return '<td>'+x.a+'</td><td><span class="badge '+s+'">'+x.b+'</span></td><td>'+x.c+'</td><td><button class="btn bd bsm" onclick="delR(this)"><i class="fas fa-times"></i></button></td>'})}
+        saveD();popAll();renderChips();closeM('mImp');document.getElementById('ld').classList.remove('show');showSec('dashboard',document.querySelector('[data-section="dashboard"]'));toast('Excel importado');
+        }catch(er){console.error(er);document.getElementById('ld').classList.remove('show');toast('Error al importar')}
     };r.readAsArrayBuffer(f);ev.target.value='';
 }
 
 // EXPORT
-function exportExcel(){
-    if(!sess){toast('Configura sesion primero');return}
-    var wb=XLSX.utils.book_new();
-    var ed=[];document.querySelectorAll('#tEst tbody tr').forEach(function(r){var c=r.cells;ed.push([parseInt(c[0].textContent)||'',c[1].textContent,c[2].textContent,c[3].textContent,c[5].textContent,parseFloat(c[4].textContent)||0,'',c[6].textContent,''])});
+function doExport(){
+    if(!sess){toast('Configura sesion primero');return}var wb=XLSX.utils.book_new();
+    var ed=[];document.querySelectorAll('#tE tbody tr').forEach(function(r){var c=r.cells;ed.push([c[0].textContent,c[1].textContent,c[2].textContent,c[3].textContent,c[5].textContent,parseFloat(c[4].textContent)||0,'',c[6].textContent,''])});
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['DIA','TIPO','ESTIBA','PACKING','DIFERENCIA','CANTIDAD','FECHA','CAMBIO','CLAVE']].concat(ed)),'ESTIBA');
-    var rd=[];document.querySelectorAll('#tRep tbody tr').forEach(function(r){var c=r.cells;rd.push([c[0].textContent,c[1].textContent,c[2].textContent,c[3].textContent])});
+    var rd=[];document.querySelectorAll('#tR tbody tr').forEach(function(r){var c=r.cells;rd.push([c[0].textContent,c[1].textContent,c[2].textContent,c[3].textContent])});
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['PROVEEDOR','PROBLEMA','ORDEN','GUIA']].concat(rd)),'RECEPCION');
-    var ld=[];document.querySelectorAll('#tLot tbody tr').forEach(function(r){var c=r.cells;ld.push([parseInt(c[0].textContent)||'',c[1].textContent,parseFloat(c[2].textContent)||0])});
+    var ld=[];document.querySelectorAll('#tL tbody tr').forEach(function(r){var c=r.cells;ld.push([c[0].textContent,c[1].textContent,parseFloat(c[2].textContent)||0])});
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['DIA','ESTADO','ESCUELAS']].concat(ld)),'LOTES');
-    var dd=[];var ds=lOpts('despachador');document.querySelectorAll('#tDesp tbody tr').forEach(function(r){var c=r.cells;var row=[c[0].textContent];ds.forEach(function(d,i){row.push(parseFloat(c[1+i].textContent)||0)});row.push(parseFloat(c[1+ds.length].textContent)||0);dd.push(row)});
-    var hdr=['ORDEN'].concat(ds).concat(['TOTAL']);
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hdr].concat(dd)),'DESPACHADORES');
-    var fn='CONTROL_'+sess.oc+'_'+sess.oe+'_'+sess.mes+'_'+sess.ano+'.xlsx';
-    XLSX.writeFile(wb,fn);toast('Exportado: '+fn);
+    var dd=[];var ds=lO('despachador');document.querySelectorAll('#tD tbody tr').forEach(function(r){var c=r.cells;var row=[c[0].textContent];ds.forEach(function(d,i){row.push(parseFloat(c[1+i].textContent)||0)});row.push(parseFloat(c[1+ds.length].textContent)||0);dd.push(row)});
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['ORDEN'].concat(ds).concat(['TOTAL'])].concat(dd)),'DESPACHADORES');
+    XLSX.writeFile(wb,'CONTROL_'+sess.oc+'_'+sess.oe+'_'+sess.mes+'_'+sess.ano+'.xlsx');toast('Exportado');
 }
 
 // INIT
-(function(){
-    initOpts();popAll();renderChips();
-    var raw=localStorage.getItem('kz_current');
-    if(raw){sess=JSON.parse(raw);document.getElementById('cfgOC').value=sess.oc;document.getElementById('cfgOE').value=sess.oe;document.getElementById('cfgMes').value=sess.mes;document.getElementById('cfgAno').value=sess.ano;updSessUI();loadSess()}
-    updNav();
-})();
+(function(){initO();popAll();renderChips();var raw=localStorage.getItem('kz_cur');if(raw){sess=JSON.parse(raw);document.getElementById('cfgOC').value=sess.oc;document.getElementById('cfgOE').value=sess.oe;document.getElementById('cfgMes').value=sess.mes;document.getElementById('cfgAno').value=sess.ano;updUI();loadS()}updN()})();
 </script>
 </body>
 </html>
